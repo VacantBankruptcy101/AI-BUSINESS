@@ -1,0 +1,252 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI MONEY MACHINE — eBook Store</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --pink:#ff00ff;--cyan:#00ffff;--green:#39ff14;
+  --orange:#ff6600;--yellow:#ffff00;--purple:#bf00ff;
+  --dark:#050008;
+}
+body{background-color:var(--dark);color:#fff;font-family:'Segoe UI',system-ui,sans-serif;overflow-x:hidden;min-height:100vh;}
+body::before{content:'';position:fixed;top:0;left:0;width:100%;height:100%;
+  background-image:linear-gradient(rgba(255,0,255,0.06) 1px,transparent 1px),linear-gradient(90deg,rgba(255,0,255,0.06) 1px,transparent 1px);
+  background-size:40px 40px;animation:grid-scroll 10s linear infinite;z-index:0;pointer-events:none;}
+body::after{content:'';position:fixed;top:0;left:0;width:100%;height:100%;
+  background:radial-gradient(ellipse at 15% 40%,rgba(255,0,255,0.18) 0%,transparent 45%),
+             radial-gradient(ellipse at 85% 20%,rgba(0,255,255,0.18) 0%,transparent 45%),
+             radial-gradient(ellipse at 50% 90%,rgba(57,255,20,0.12) 0%,transparent 45%),
+             radial-gradient(ellipse at 70% 60%,rgba(191,0,255,0.12) 0%,transparent 40%);
+  z-index:0;pointer-events:none;}
+@keyframes grid-scroll{0%{background-position:0 0,0 0;}100%{background-position:40px 40px,40px 40px;}}
+.z1{position:relative;z-index:1;}
+/* TICKER */
+/* NAV BAR */
+.store-nav{background:rgba(5,0,8,.95);border-bottom:1px solid rgba(255,0,255,.25);padding:12px 20px;position:sticky;top:0;z-index:200;backdrop-filter:blur(14px);}
+.store-nav-inner{max-width:1240px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:12px;}
+.nav-logo-sm{font-size:.95rem;font-weight:900;background:linear-gradient(90deg,var(--pink),var(--cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.nav-links{display:flex;gap:10px;align-items:center;}
+.nav-link{padding:6px 14px;border-radius:18px;font-size:.75rem;font-weight:800;text-decoration:none;letter-spacing:1px;transition:all .3s;border:1px solid;}
+.nl-cart{background:rgba(255,0,255,.15);border-color:rgba(255,0,255,.4);color:var(--pink);}
+.nl-cart:hover{background:rgba(255,0,255,.28);box-shadow:0 0 12px rgba(255,0,255,.3);}
+.nl-member{background:rgba(57,255,20,.15);border-color:rgba(57,255,20,.4);color:var(--green);}
+.nl-member:hover{background:rgba(57,255,20,.28);box-shadow:0 0 12px rgba(57,255,20,.3);}
+.nl-admin{background:rgba(0,255,255,.08);border-color:rgba(0,255,255,.2);color:rgba(0,255,255,.6);}
+.nl-admin:hover{color:var(--cyan);}
+.ticker{background:linear-gradient(90deg,#ff00ff,#00ffff,#39ff14,#ff6600,#ffff00,#bf00ff,#ff00ff);padding:10px 0;overflow:hidden;position:relative;z-index:1;}
+.ticker-inner{display:flex;animation:tick 25s linear infinite;white-space:nowrap;font-size:.82rem;font-weight:800;color:#000;letter-spacing:2px;}
+.ticker-item{padding:0 40px;}
+@keyframes tick{0%{transform:translateX(0);}100%{transform:translateX(-50%);}}
+/* HEADER */
+header{text-align:center;padding:60px 20px 30px;position:relative;z-index:1;}
+.logo{font-size:clamp(2.2rem,6vw,4.5rem);font-weight:900;letter-spacing:5px;text-transform:uppercase;
+  background:linear-gradient(90deg,#ff00ff,#00ffff,#39ff14,#ffff00,#ff6600,#bf00ff,#ff00ff);
+  background-size:300% 100%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  animation:rainbow 5s linear infinite,glow 2s ease-in-out infinite alternate;line-height:1.1;}
+@keyframes rainbow{0%{background-position:0% 50%;}100%{background-position:300% 50%;}}
+@keyframes glow{0%{filter:drop-shadow(0 0 12px rgba(255,0,255,.9));}100%{filter:drop-shadow(0 0 25px rgba(0,255,255,.9));}}
+.logo-sub{font-size:.95rem;color:var(--cyan);text-shadow:0 0 12px var(--cyan);margin-top:12px;letter-spacing:3px;font-weight:600;}
+.logo-desc{font-size:.85rem;color:rgba(255,255,255,.55);margin-top:8px;}
+.badges{display:flex;gap:10px;justify-content:center;margin-top:22px;flex-wrap:wrap;}
+.badge{padding:5px 14px;border-radius:20px;font-size:.72rem;font-weight:800;letter-spacing:1px;text-transform:uppercase;}
+.b-pink{background:rgba(255,0,255,.15);border:1px solid var(--pink);color:var(--pink);text-shadow:0 0 6px var(--pink);}
+.b-cyan{background:rgba(0,255,255,.15);border:1px solid var(--cyan);color:var(--cyan);text-shadow:0 0 6px var(--cyan);}
+.b-green{background:rgba(57,255,20,.15);border:1px solid var(--green);color:var(--green);text-shadow:0 0 6px var(--green);}
+.b-orange{background:rgba(255,102,0,.15);border:1px solid var(--orange);color:var(--orange);text-shadow:0 0 6px var(--orange);}
+/* SECTION */
+.section{padding:10px 20px 60px;position:relative;z-index:1;max-width:1240px;margin:0 auto;}
+.sec-title{text-align:center;font-size:1.6rem;font-weight:800;color:var(--yellow);text-shadow:0 0 18px var(--yellow);margin-bottom:36px;letter-spacing:4px;text-transform:uppercase;}
+/* GRID */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:28px;}
+.card{background:rgba(8,0,18,.85);border:2px solid;border-radius:18px;overflow:hidden;transition:transform .35s,box-shadow .35s;backdrop-filter:blur(12px);cursor:pointer;}
+.card:hover{transform:translateY(-10px) scale(1.02);}
+.card:nth-child(1){border-color:var(--pink);box-shadow:0 0 22px rgba(255,0,255,.3),inset 0 0 22px rgba(255,0,255,.05);}
+.card:nth-child(2){border-color:var(--cyan);box-shadow:0 0 22px rgba(0,255,255,.3),inset 0 0 22px rgba(0,255,255,.05);}
+.card:nth-child(3){border-color:var(--green);box-shadow:0 0 22px rgba(57,255,20,.3),inset 0 0 22px rgba(57,255,20,.05);}
+.card:nth-child(4){border-color:var(--orange);box-shadow:0 0 22px rgba(255,102,0,.3),inset 0 0 22px rgba(255,102,0,.05);}
+.card:nth-child(5){border-color:var(--purple);box-shadow:0 0 22px rgba(191,0,255,.3),inset 0 0 22px rgba(191,0,255,.05);}
+.card:nth-child(6){border-color:var(--yellow);box-shadow:0 0 22px rgba(255,255,0,.3),inset 0 0 22px rgba(255,255,0,.05);}
+.card:hover:nth-child(1){box-shadow:0 18px 45px rgba(255,0,255,.55),inset 0 0 35px rgba(255,0,255,.1);}
+.card:hover:nth-child(2){box-shadow:0 18px 45px rgba(0,255,255,.55),inset 0 0 35px rgba(0,255,255,.1);}
+.card:hover:nth-child(3){box-shadow:0 18px 45px rgba(57,255,20,.55),inset 0 0 35px rgba(57,255,20,.1);}
+.card:hover:nth-child(4){box-shadow:0 18px 45px rgba(255,102,0,.55),inset 0 0 35px rgba(255,102,0,.1);}
+.card:hover:nth-child(5){box-shadow:0 18px 45px rgba(191,0,255,.55),inset 0 0 35px rgba(191,0,255,.1);}
+.card:hover:nth-child(6){box-shadow:0 18px 45px rgba(255,255,0,.55),inset 0 0 35px rgba(255,255,0,.1);}
+/* COVERS */
+.cover{height:195px;display:flex;align-items:center;justify-content:center;font-size:5rem;position:relative;overflow:hidden;}
+.card:nth-child(1) .cover{background:linear-gradient(135deg,#1a0035,#3d0060,#700098);}
+.card:nth-child(2) .cover{background:linear-gradient(135deg,#001a32,#003d72,#0068a8);}
+.card:nth-child(3) .cover{background:linear-gradient(135deg,#001800,#003800,#006500);}
+.card:nth-child(4) .cover{background:linear-gradient(135deg,#1e0800,#451500,#782200);}
+.card:nth-child(5) .cover{background:linear-gradient(135deg,#1a0038,#4a007a,#8000bb);}
+.card:nth-child(6) .cover{background:linear-gradient(135deg,#1c1c00,#414100,#707000);}
+.cover-icon{animation:float 3.2s ease-in-out infinite;display:block;}
+.card:nth-child(2) .cover-icon{animation-delay:.5s;}
+.card:nth-child(3) .cover-icon{animation-delay:1s;}
+.card:nth-child(4) .cover-icon{animation-delay:1.5s;}
+.card:nth-child(5) .cover-icon{animation-delay:.3s;}
+.card:nth-child(6) .cover-icon{animation-delay:.9s;}
+@keyframes float{0%,100%{transform:translateY(0);}50%{transform:translateY(-14px);}}
+.best-badge{position:absolute;top:12px;right:12px;background:linear-gradient(135deg,#ff00ff,#ff6600);color:#fff;font-size:.62rem;font-weight:900;padding:4px 11px;border-radius:20px;text-transform:uppercase;letter-spacing:1px;animation:pulse-b 2s ease-in-out infinite;}
+@keyframes pulse-b{0%,100%{transform:scale(1);}50%{transform:scale(1.12);}}
+/* BODY */
+.body{padding:20px;}
+.tags{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;}
+.tag{font-size:.62rem;padding:3px 9px;border-radius:10px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;border:1px solid;background:rgba(0,0,0,.3);}
+.title{font-size:1.08rem;font-weight:800;line-height:1.35;margin-bottom:8px;color:#fff;}
+.desc{font-size:.83rem;color:rgba(255,255,255,.62);line-height:1.65;margin-bottom:16px;}
+.pricing{display:flex;align-items:baseline;gap:14px;margin-bottom:6px;}
+.price-main{font-size:2rem;font-weight:900;color:#fff;}
+.member-info{line-height:1.3;}
+.member-label{font-size:.68rem;color:var(--green);text-shadow:0 0 8px var(--green);font-weight:700;}
+.member-price{font-size:.95rem;font-weight:800;color:var(--green);text-shadow:0 0 8px var(--green);}
+.savings{font-size:.72rem;color:rgba(255,255,255,.45);margin-bottom:18px;}
+.btn-row{display:grid;grid-template-columns:1fr auto;gap:8px;}
+.btn{width:100%;padding:13px;border:none;border-radius:11px;font-size:.9rem;font-weight:900;letter-spacing:1px;text-transform:uppercase;cursor:pointer;position:relative;overflow:hidden;transition:all .3s;text-decoration:none;display:block;text-align:center;}
+.btn-cart-sm{padding:13px 14px;border-radius:11px;border:none;cursor:pointer;font-size:1.1rem;transition:all .3s;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);}
+.btn-cart-sm:hover{background:rgba(255,255,255,.2);transform:scale(1.1);}
+.btn::before{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.22),transparent);transition:left .5s;}
+.btn:hover::before{left:100%;}
+.btn:hover{transform:translateY(-3px);filter:brightness(1.2);}
+.card:nth-child(1) .btn{background:linear-gradient(135deg,var(--pink),var(--purple));color:#fff;box-shadow:0 5px 18px rgba(255,0,255,.5);}
+.card:nth-child(2) .btn{background:linear-gradient(135deg,var(--cyan),#0055ff);color:#000;box-shadow:0 5px 18px rgba(0,255,255,.5);}
+.card:nth-child(3) .btn{background:linear-gradient(135deg,var(--green),#00aa00);color:#000;box-shadow:0 5px 18px rgba(57,255,20,.5);}
+.card:nth-child(4) .btn{background:linear-gradient(135deg,var(--orange),#ff2200);color:#fff;box-shadow:0 5px 18px rgba(255,102,0,.5);}
+.card:nth-child(5) .btn{background:linear-gradient(135deg,var(--purple),var(--pink));color:#fff;box-shadow:0 5px 18px rgba(191,0,255,.5);}
+.card:nth-child(6) .btn{background:linear-gradient(135deg,var(--yellow),var(--orange));color:#000;box-shadow:0 5px 18px rgba(255,255,0,.5);}
+/* FOOTER */
+footer{text-align:center;padding:36px 20px;border-top:1px solid rgba(255,0,255,.2);position:relative;z-index:1;}
+footer p{color:rgba(255,255,255,.38);font-size:.82rem;}
+.admin-link{display:inline-block;margin-top:10px;color:rgba(255,255,255,.25);font-size:.72rem;text-decoration:none;transition:color .3s;}
+.admin-link:hover{color:var(--cyan);}
+/* NEON DIVIDER */
+.divider{height:2px;background:linear-gradient(90deg,transparent,var(--pink),var(--cyan),var(--green),var(--orange),transparent);margin:0;position:relative;z-index:1;}
+/* PROMO BANNER */
+.promo{background:linear-gradient(90deg,rgba(255,0,255,.12),rgba(0,255,255,.12),rgba(57,255,20,.12));border:1px solid rgba(255,0,255,.3);border-radius:12px;padding:20px 30px;text-align:center;margin-bottom:36px;position:relative;overflow:hidden;}
+.promo::before{content:'';position:absolute;top:-50%;left:-50%;width:200%;height:200%;background:conic-gradient(from 0deg,transparent,rgba(255,0,255,.05),transparent,rgba(0,255,255,.05),transparent);animation:spin 8s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.promo h2{font-size:1.4rem;color:var(--yellow);text-shadow:0 0 15px var(--yellow);position:relative;z-index:1;}
+.promo p{color:rgba(255,255,255,.7);margin-top:6px;font-size:.88rem;position:relative;z-index:1;}
+</style>
+</head>
+<body>
+
+<!-- TOP NAV -->
+<nav class="store-nav">
+  <div class="store-nav-inner">
+    <span class="nav-logo-sm">🤖 AI MONEY MACHINE</span>
+    <div class="nav-links">
+      <a href="cart.html" class="nav-link nl-cart">🛒 CART</a>
+      <a href="members.html" class="nav-link nl-member">💎 MEMBERS</a>
+      <a href="admin.html" class="nav-link nl-admin">⚙ ADMIN</a>
+    </div>
+  </div>
+</nav>
+<!-- SCROLLING TICKER -->
+<div class="ticker">
+  <div class="ticker-inner" id="ticker"></div>
+</div>
+
+<!-- HEADER -->
+<header>
+  <div class="logo">🤖 AI MONEY MACHINE</div>
+  <div class="logo-sub">⚡ THE WORLD'S #1 AI MONETIZATION eBOOK STORE ⚡</div>
+  <div class="logo-desc">Turn Artificial Intelligence Into Your Personal ATM — Starting Today</div>
+  <div class="badges">
+    <span class="badge b-pink">🔥 Instant Download</span>
+    <span class="badge b-cyan">🛡️ 30-Day Guarantee</span>
+    <span class="badge b-green">💎 Members Save Up to 40%</span>
+    <span class="badge b-orange">⚡ 6 Exclusive Titles</span>
+  </div>
+</header>
+
+<div class="divider"></div>
+
+<!-- STORE SECTION -->
+<div class="section z1">
+  <div class="promo">
+    <h2>🌟 FREE MEMBERSHIP = MASSIVE DISCOUNTS 🌟</h2>
+    <p>Sign up free on any product page to unlock member-only prices — save up to 40% instantly!</p>
+  </div>
+  <div class="sec-title">⚡ CHOOSE YOUR AI MONEY BLUEPRINT ⚡</div>
+  <div class="grid" id="booksGrid"></div>
+</div>
+
+<div class="divider"></div>
+
+<!-- FOOTER -->
+<footer>
+  <p>© 2024 AI MONEY MACHINE eBook Store — All Rights Reserved</p>
+  <p style="margin-top:6px;color:rgba(255,255,255,.3);font-size:.75rem;">All eBooks are delivered digitally. No physical products shipped.</p>
+  <div style="display:flex;gap:14px;justify-content:center;margin-top:14px;flex-wrap:wrap;">
+    <a href="cart.html" class="admin-link" style="color:rgba(255,0,255,.4);">🛒 Cart</a>
+    <a href="members.html" class="admin-link" style="color:rgba(57,255,20,.4);">💎 Members Portal</a>
+    <a href="admin.html" class="admin-link">⚙ Admin Portal</a>
+  </div>
+</footer>
+
+<script>
+const BOOKS=[
+  {id:1,emoji:"🤖",title:"The AI Profit Blueprint",fullTitle:"The AI Profit Blueprint: 7 Proven Methods to Make Money with AI",price:37.00,memberPrice:24.99,tags:["Beginner","Passive Income","Strategy"],tagColors:["#ff00ff","#00ffff","#39ff14"],best:true,desc:"Discover 7 battle-tested strategies to generate real income using today's most powerful AI tools — no coding required."},
+  {id:2,emoji:"💬",title:"ChatGPT Cash Machine",fullTitle:"ChatGPT Cash Machine: Build a 6-Figure Business Using AI",price:29.99,memberPrice:19.99,tags:["ChatGPT","Business","Scaling"],tagColors:["#00ffff","#bf00ff","#ff6600"],best:true,desc:"Build a profitable business using ChatGPT — from ghostwriting to client acquisition to full-scale agency operations."},
+  {id:3,emoji:"💰",title:"Passive Income AI Empire",fullTitle:"Passive Income AI Empire: Automate Your Way to Financial Freedom",price:44.99,memberPrice:29.99,tags:["Automation","Passive Income","Advanced"],tagColors:["#39ff14","#ffff00","#ff00ff"],best:false,desc:"Build automated income streams that work around the clock using AI tools — your empire runs while you sleep."},
+  {id:4,emoji:"⚡",title:"Prompt Engineering for Profit",fullTitle:"Prompt Engineering for Profit: Turn AI Communication Into a 6-Figure Skill",price:34.99,memberPrice:22.99,tags:["Prompt Eng.","Freelance","In-Demand"],tagColors:["#ff6600","#ff00ff","#00ffff"],best:false,desc:"Master the most in-demand AI skill of the decade and turn it into a lucrative freelance career or consulting practice."},
+  {id:5,emoji:"🚀",title:"AI Freelancer's Fortune",fullTitle:"AI Freelancer's Fortune: Land High-Paying Clients with AI-Powered Services",price:27.99,memberPrice:17.99,tags:["Freelancing","Clients","Services"],tagColors:["#bf00ff","#00ffff","#39ff14"],best:false,desc:"Transform your freelance business with AI tools that let you deliver more value, win more clients, and charge premium rates."},
+  {id:6,emoji:"👑",title:"Digital Gold: AI Content Empire",fullTitle:"Digital Gold: Monetizing AI-Generated Content at Scale",price:39.99,memberPrice:26.99,tags:["Content","Multiple Platforms","Scale"],tagColors:["#ffff00","#ff6600","#ff00ff"],best:true,desc:"Build a content empire across blogs, YouTube, social media & newsletters — all generating revenue simultaneously."}
+];
+
+const tickerMsgs=["🤖 AI PROFIT BLUEPRINT","💬 CHATGPT CASH MACHINE","💰 PASSIVE INCOME AI EMPIRE","⚡ PROMPT ENGINEERING FOR PROFIT","🚀 AI FREELANCER'S FORTUNE","👑 DIGITAL GOLD AI CONTENT EMPIRE","🔥 JOIN FREE — SAVE UP TO 40%","⭐ INSTANT DIGITAL DOWNLOAD","🌟 6 EXCLUSIVE AI MONETIZATION EBOOKS"];
+const tInner=document.getElementById('ticker');
+const full=[...tickerMsgs,...tickerMsgs].map(t=>`<span class="ticker-item">${t} &nbsp;•&nbsp;</span>`).join('');
+tInner.innerHTML=full+full;
+
+const grid=document.getElementById('booksGrid');
+BOOKS.forEach((b,i)=>{
+  const savings=(b.price-b.memberPrice).toFixed(2);
+  const pct=Math.round((b.price-b.memberPrice)/b.price*100);
+  const tagHTML=b.tags.map((t,j)=>`<span class="tag" style="color:${b.tagColors[j]};border-color:${b.tagColors[j]}">${t}</span>`).join('');
+  grid.innerHTML+=`
+  <div class="card" onclick="location.href='product.html?id=${b.id}'">
+    <div class="cover">
+      <span class="cover-icon">${b.emoji}</span>
+      ${b.best?'<div class="best-badge">⭐ BESTSELLER</div>':''}
+    </div>
+    <div class="body">
+      <div class="tags">${tagHTML}</div>
+      <div class="title">${b.fullTitle}</div>
+      <div class="desc">${b.desc}</div>
+      <div class="pricing">
+        <span class="price-main">$${b.price.toFixed(2)}</span>
+        <div class="member-info">
+          <div class="member-label">💎 MEMBER PRICE</div>
+          <div class="member-price">$${b.memberPrice.toFixed(2)}</div>
+        </div>
+      </div>
+      <div class="savings">💰 Members save $${savings} (${pct}% off) — Join FREE!</div>
+      <div class="btn-row">
+        <a class="btn" href="product.html?id=${b.id}">🛒 VIEW & BUY</a>
+        <button class="btn-cart-sm" title="Add to Cart" onclick="event.stopPropagation();addCart(${b.id})">🛍️</button>
+      </div>
+    </div>
+  </div>`;
+});
+
+function addCart(id){
+  const c=JSON.parse(localStorage.getItem('aistore_cart')||'[]');
+  if(c.find(i=>i.id===id)){showStoreToast('Already in cart! 🛒');return;}
+  c.push({id,format:'PDF'});localStorage.setItem('aistore_cart',JSON.stringify(c));
+  showStoreToast('✅ Added to cart! Go to cart to complete purchase.');
+}
+function showStoreToast(msg){
+  let t=document.getElementById('storeToast');
+  if(!t){t=document.createElement('div');t.id='storeToast';t.style.cssText='position:fixed;bottom:22px;right:22px;background:rgba(57,255,20,.2);border:1px solid #39ff14;color:#39ff14;padding:12px 18px;border-radius:10px;font-size:.85rem;font-weight:700;z-index:9999;transition:all .35s;pointer-events:none;';document.body.appendChild(t);}
+  t.textContent=msg;t.style.opacity='1';t.style.transform='translateY(0)';
+  clearTimeout(t._t);t._t=setTimeout(()=>{t.style.opacity='0';t.style.transform='translateY(8px)';},3000);
+}
+</script>
+</body>
+</html>
