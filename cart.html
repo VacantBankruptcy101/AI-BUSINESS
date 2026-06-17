@@ -1,0 +1,597 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Money Machine — Shopping Cart</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{--pink:#ff00ff;--cyan:#00ffff;--green:#39ff14;--orange:#ff6600;--yellow:#ffff00;--purple:#bf00ff;--dark:#050008;}
+body{background:var(--dark);color:#fff;font-family:'Segoe UI',system-ui,sans-serif;overflow-x:hidden;min-height:100vh;}
+body::before{content:'';position:fixed;top:0;left:0;width:100%;height:100%;
+  background-image:linear-gradient(rgba(255,0,255,0.05) 1px,transparent 1px),linear-gradient(90deg,rgba(0,255,255,0.05) 1px,transparent 1px);
+  background-size:40px 40px;animation:gs 12s linear infinite;z-index:0;pointer-events:none;}
+body::after{content:'';position:fixed;top:0;left:0;width:100%;height:100%;
+  background:radial-gradient(ellipse at 10% 20%,rgba(191,0,255,0.2) 0%,transparent 50%),
+             radial-gradient(ellipse at 90% 80%,rgba(0,255,255,0.15) 0%,transparent 50%),
+             radial-gradient(ellipse at 50% 50%,rgba(255,0,255,0.08) 0%,transparent 60%);
+  z-index:0;pointer-events:none;}
+@keyframes gs{0%{background-position:0 0,0 0;}100%{background-position:40px 40px,40px 40px;}}
+
+/* NAV */
+nav{background:rgba(5,0,8,.95);border-bottom:1px solid rgba(255,0,255,.3);padding:14px 20px;position:sticky;top:0;z-index:100;backdrop-filter:blur(14px);}
+.nav-inner{max-width:1100px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;}
+.back-btn{color:var(--cyan);text-decoration:none;font-weight:700;font-size:.88rem;letter-spacing:1px;transition:all .3s;}
+.back-btn:hover{text-shadow:0 0 10px var(--cyan);}
+.nav-logo{font-size:1rem;font-weight:900;background:linear-gradient(90deg,var(--pink),var(--cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.nav-right{display:flex;gap:14px;align-items:center;}
+.member-nav-btn{padding:6px 14px;background:rgba(57,255,20,.15);border:1px solid rgba(57,255,20,.4);color:var(--green);border-radius:20px;font-size:.75rem;font-weight:800;text-decoration:none;letter-spacing:1px;transition:all .3s;}
+.member-nav-btn:hover{background:rgba(57,255,20,.25);box-shadow:0 0 12px rgba(57,255,20,.3);}
+
+/* LAYOUT */
+.wrap{max-width:1100px;margin:0 auto;padding:36px 18px;position:relative;z-index:1;display:grid;grid-template-columns:1fr 360px;gap:28px;align-items:start;}
+@media(max-width:860px){.wrap{grid-template-columns:1fr;}}
+
+/* PAGE TITLE */
+.page-header{grid-column:1/-1;padding-bottom:20px;border-bottom:1px solid rgba(255,0,255,.2);margin-bottom:4px;}
+.page-title{font-size:clamp(1.6rem,4vw,2.2rem);font-weight:900;background:linear-gradient(90deg,var(--pink),var(--cyan),var(--yellow));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.page-sub{color:rgba(255,255,255,.45);font-size:.85rem;margin-top:6px;}
+
+/* CART ITEMS */
+.cart-items-col{}
+.empty-cart{text-align:center;padding:60px 20px;background:rgba(10,0,22,.8);border:2px dashed rgba(255,0,255,.25);border-radius:16px;}
+.empty-icon{font-size:5rem;margin-bottom:16px;}
+.empty-msg{font-size:1.1rem;color:rgba(255,255,255,.5);margin-bottom:20px;}
+.btn-shop{display:inline-block;padding:13px 32px;background:linear-gradient(135deg,var(--pink),var(--purple));color:#fff;text-decoration:none;border-radius:10px;font-weight:900;letter-spacing:2px;font-size:.88rem;text-transform:uppercase;transition:all .3s;}
+.btn-shop:hover{box-shadow:0 0 25px rgba(255,0,255,.5);transform:translateY(-2px);}
+
+/* CART ITEM CARD */
+.cart-item{background:rgba(10,0,22,.85);border:1px solid rgba(255,255,255,.12);border-radius:14px;padding:20px;margin-bottom:14px;display:flex;gap:16px;align-items:flex-start;transition:all .3s;backdrop-filter:blur(8px);}
+.cart-item:hover{border-color:rgba(255,0,255,.35);box-shadow:0 0 15px rgba(255,0,255,.1);}
+.item-emoji{font-size:2.8rem;flex-shrink:0;width:58px;height:58px;display:flex;align-items:center;justify-content:center;border-radius:10px;}
+.item-body{flex:1;}
+.item-title{font-size:.95rem;font-weight:800;color:#fff;line-height:1.35;margin-bottom:6px;}
+.item-meta{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px;}
+.item-format-badge{padding:3px 10px;border-radius:10px;font-size:.68rem;font-weight:800;background:rgba(0,255,255,.1);border:1px solid rgba(0,255,255,.3);color:var(--cyan);}
+.item-member-badge{padding:3px 10px;border-radius:10px;font-size:.68rem;font-weight:800;background:rgba(57,255,20,.1);border:1px solid rgba(57,255,20,.3);color:var(--green);}
+.item-format-select{background:rgba(0,0,0,.5);border:1px solid rgba(255,255,255,.18);border-radius:8px;color:#fff;padding:6px 10px;font-size:.8rem;outline:none;cursor:pointer;transition:border-color .3s;}
+.item-format-select:focus{border-color:var(--cyan);}
+.item-price-row{display:flex;align-items:center;justify-content:space-between;margin-top:10px;}
+.item-price{font-size:1.3rem;font-weight:900;color:#fff;}
+.item-price.member-price{color:var(--green);text-shadow:0 0 8px var(--green);}
+.item-orig-price{font-size:.82rem;color:rgba(255,255,255,.35);text-decoration:line-through;margin-left:8px;}
+.remove-btn{padding:6px 14px;background:rgba(255,50,50,.12);border:1px solid rgba(255,50,50,.35);color:#ff5555;border-radius:8px;cursor:pointer;font-size:.75rem;font-weight:700;transition:all .3s;flex-shrink:0;}
+.remove-btn:hover{background:rgba(255,50,50,.25);box-shadow:0 0 10px rgba(255,50,50,.3);}
+
+/* ADD MORE */
+.add-more-bar{background:rgba(0,0,0,.4);border:1px dashed rgba(255,255,255,.15);border-radius:12px;padding:16px;text-align:center;margin-bottom:8px;}
+.add-more-text{color:rgba(255,255,255,.4);font-size:.82rem;margin-bottom:10px;}
+.book-quick-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px;}
+.book-quick-btn{padding:8px 6px;background:rgba(255,0,255,.08);border:1px solid rgba(255,0,255,.2);border-radius:8px;color:rgba(255,255,255,.7);font-size:.72rem;cursor:pointer;text-align:center;transition:all .3s;line-height:1.3;}
+.book-quick-btn:hover{background:rgba(255,0,255,.2);border-color:var(--pink);color:#fff;}
+.book-quick-btn .qb-emoji{font-size:1.4rem;display:block;margin-bottom:3px;}
+.book-quick-btn.in-cart{opacity:.4;cursor:not-allowed;}
+
+/* ORDER SUMMARY */
+.summary-col{position:sticky;top:80px;}
+.summary-card{background:rgba(10,0,22,.9);border:2px solid rgba(255,0,255,.35);border-radius:16px;padding:26px;backdrop-filter:blur(12px);box-shadow:0 0 30px rgba(255,0,255,.15);}
+.summary-title{font-size:1.1rem;font-weight:900;color:var(--pink);text-shadow:0 0 10px var(--pink);margin-bottom:20px;text-transform:uppercase;letter-spacing:2px;border-bottom:1px solid rgba(255,0,255,.2);padding-bottom:14px;}
+.summary-line{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.06);font-size:.88rem;}
+.summary-line:last-of-type{border-bottom:none;}
+.summary-label{color:rgba(255,255,255,.55);}
+.summary-value{font-weight:700;color:#fff;}
+.summary-value.discount{color:var(--green);text-shadow:0 0 6px var(--green);}
+.summary-value.total{font-size:1.4rem;color:var(--yellow);text-shadow:0 0 10px var(--yellow);}
+.summary-total-row{display:flex;justify-content:space-between;align-items:center;padding:16px 0 14px;border-top:2px solid rgba(255,0,255,.25);margin-top:8px;}
+.summary-total-label{font-size:1rem;font-weight:900;color:#fff;}
+
+/* MEMBER PROMO */
+.member-promo{background:linear-gradient(135deg,rgba(57,255,20,.1),rgba(0,200,0,.08));border:1px solid rgba(57,255,20,.35);border-radius:12px;padding:16px;margin:16px 0;}
+.member-promo-title{font-size:.88rem;font-weight:800;color:var(--green);text-shadow:0 0 8px var(--green);margin-bottom:8px;}
+.member-promo-text{font-size:.78rem;color:rgba(255,255,255,.6);line-height:1.6;margin-bottom:12px;}
+.mp-form{display:flex;flex-direction:column;gap:8px;}
+.mp-inp{padding:10px 12px;background:rgba(0,0,0,.5);border:1px solid rgba(57,255,20,.3);border-radius:8px;color:#fff;font-size:.82rem;outline:none;}
+.mp-inp:focus{border-color:var(--green);}
+.mp-inp::placeholder{color:rgba(255,255,255,.3);}
+.mp-btn{padding:10px;background:linear-gradient(135deg,var(--green),#009900);color:#000;border:none;border-radius:8px;font-size:.82rem;font-weight:900;letter-spacing:1px;cursor:pointer;text-transform:uppercase;}
+.mp-btn:hover{box-shadow:0 0 15px rgba(57,255,20,.4);}
+.member-active{background:rgba(57,255,20,.12);border:1px solid var(--green);border-radius:10px;padding:12px;text-align:center;color:var(--green);font-weight:800;font-size:.82rem;display:none;}
+
+/* CHECKOUT SECTION */
+.checkout-section{margin-top:18px;}
+.co-label{font-size:.72rem;font-weight:800;color:rgba(255,255,255,.45);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;display:block;}
+.co-inp{width:100%;padding:11px 13px;background:rgba(0,0,0,.5);border:1px solid rgba(255,255,255,.15);border-radius:9px;color:#fff;font-size:.88rem;outline:none;transition:border-color .3s;margin-bottom:12px;}
+.co-inp:focus{border-color:var(--cyan);box-shadow:0 0 8px rgba(0,255,255,.2);}
+.co-inp::placeholder{color:rgba(255,255,255,.3);}
+.tnc-row{display:flex;align-items:flex-start;gap:8px;margin-bottom:16px;cursor:pointer;}
+.tnc-row input{width:16px;height:16px;margin-top:2px;accent-color:var(--cyan);flex-shrink:0;}
+.tnc-row span{font-size:.76rem;color:rgba(255,255,255,.55);line-height:1.5;}
+.tnc-row a{color:var(--cyan);text-decoration:none;}
+
+.checkout-btn{width:100%;padding:17px;background:linear-gradient(135deg,var(--pink),var(--purple),var(--cyan));color:#fff;border:none;border-radius:12px;font-size:1rem;font-weight:900;letter-spacing:2px;text-transform:uppercase;cursor:pointer;position:relative;overflow:hidden;transition:all .3s;box-shadow:0 6px 25px rgba(255,0,255,.45);}
+.checkout-btn::before{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.2),transparent);transition:left .5s;}
+.checkout-btn:hover::before{left:100%;}
+.checkout-btn:hover{transform:translateY(-3px);box-shadow:0 14px 35px rgba(255,0,255,.6);}
+.checkout-btn:disabled{opacity:.45;cursor:not-allowed;transform:none;}
+
+/* GUARANTEE BAR */
+.guarantee-bar{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px;}
+.gbar{flex:1;min-width:80px;text-align:center;font-size:.68rem;color:rgba(255,255,255,.45);background:rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.08);border-radius:8px;padding:8px 6px;line-height:1.4;}
+.gbar-icon{font-size:1.2rem;display:block;margin-bottom:3px;}
+
+/* TRUST BADGES */
+.trust-section{text-align:center;margin-top:16px;}
+.trust-text{font-size:.7rem;color:rgba(255,255,255,.3);letter-spacing:.5px;}
+
+/* COUPON */
+.coupon-row{display:flex;gap:8px;margin-bottom:12px;}
+.coupon-inp{flex:1;padding:9px 12px;background:rgba(0,0,0,.5);border:1px solid rgba(255,255,255,.15);border-radius:8px;color:#fff;font-size:.82rem;outline:none;}
+.coupon-inp:focus{border-color:var(--yellow);}
+.coupon-inp::placeholder{color:rgba(255,255,255,.3);}
+.coupon-btn{padding:9px 14px;background:rgba(255,255,0,.15);border:1px solid rgba(255,255,0,.35);color:var(--yellow);border-radius:8px;font-size:.78rem;font-weight:800;cursor:pointer;transition:all .3s;white-space:nowrap;}
+.coupon-btn:hover{background:rgba(255,255,0,.25);}
+.coupon-msg{font-size:.75rem;margin-bottom:10px;min-height:16px;}
+
+/* MODAL */
+.modal-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.88);z-index:1000;display:none;align-items:center;justify-content:center;backdrop-filter:blur(10px);}
+.modal-overlay.show{display:flex;}
+.modal{background:linear-gradient(135deg,#0a0018,#001a10);border:2px solid var(--green);border-radius:22px;padding:44px 36px;max-width:520px;width:92%;text-align:center;box-shadow:0 0 60px rgba(57,255,20,.35),0 0 120px rgba(57,255,20,.15);}
+.modal-icon{font-size:5rem;margin-bottom:18px;animation:float 2s ease-in-out infinite;display:block;}
+@keyframes float{0%,100%{transform:translateY(0);}50%{transform:translateY(-12px);}}
+.modal-title{font-size:1.8rem;font-weight:900;color:var(--green);text-shadow:0 0 20px var(--green);margin-bottom:10px;}
+.modal-sub{font-size:1rem;color:var(--yellow);margin-bottom:14px;font-weight:700;}
+.modal-text{color:rgba(255,255,255,.7);line-height:1.8;font-size:.88rem;margin-bottom:20px;}
+.order-summary-box{background:rgba(57,255,20,.08);border:1px solid rgba(57,255,20,.25);border-radius:12px;padding:16px;text-align:left;margin-bottom:22px;font-size:.82rem;line-height:1.9;color:rgba(255,255,255,.7);}
+.order-summary-box strong{color:var(--green);}
+.modal-btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;}
+.btn-modal-primary{padding:12px 30px;background:linear-gradient(135deg,var(--green),#00aa00);color:#000;border:none;border-radius:10px;font-size:.9rem;font-weight:900;cursor:pointer;letter-spacing:1px;text-transform:uppercase;}
+.btn-modal-secondary{padding:12px 30px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.2);color:rgba(255,255,255,.7);border-radius:10px;font-size:.9rem;font-weight:700;cursor:pointer;text-decoration:none;display:inline-block;}
+.btn-modal-primary:hover{box-shadow:0 0 20px rgba(57,255,20,.5);}
+.btn-modal-secondary:hover{border-color:var(--cyan);color:var(--cyan);}
+
+/* PROGRESS */
+.progress-bar-wrap{background:rgba(0,0,0,.4);border-radius:20px;height:6px;margin-bottom:6px;overflow:hidden;}
+.progress-bar-fill{height:100%;border-radius:20px;background:linear-gradient(90deg,var(--pink),var(--cyan));transition:width .5s ease;}
+.progress-text{font-size:.72rem;color:rgba(255,255,255,.4);text-align:right;}
+
+/* SAVINGS METER */
+.savings-meter{background:linear-gradient(135deg,rgba(255,0,255,.08),rgba(191,0,255,.08));border:1px solid rgba(255,0,255,.2);border-radius:10px;padding:12px 14px;margin-bottom:14px;text-align:center;}
+.savings-meter-text{font-size:.78rem;color:var(--pink);font-weight:700;}
+.savings-amount{font-size:1.4rem;font-weight:900;color:var(--pink);text-shadow:0 0 10px var(--pink);}
+
+/* DIVIDER */
+.ndiv{height:1px;background:linear-gradient(90deg,transparent,rgba(255,0,255,.3),transparent);margin:16px 0;}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-inner">
+    <a href="store.html" class="back-btn">← Continue Shopping</a>
+    <span class="nav-logo">🤖 AI MONEY MACHINE</span>
+    <div class="nav-right">
+      <a href="members.html" class="member-nav-btn">💎 MY ACCOUNT</a>
+    </div>
+  </div>
+</nav>
+
+<div class="wrap">
+  <!-- PAGE HEADER -->
+  <div class="page-header">
+    <div class="page-title">🛒 Your Shopping Cart</div>
+    <div class="page-sub" id="cartCount">Loading cart...</div>
+  </div>
+
+  <!-- LEFT: CART ITEMS -->
+  <div class="cart-items-col">
+    <div id="cartItemsContainer"></div>
+
+    <!-- ADD MORE BOOKS -->
+    <div class="add-more-bar" id="addMoreBar" style="display:none;">
+      <div class="add-more-text">➕ Add more eBooks to your cart and save even more!</div>
+      <div class="book-quick-grid" id="addMoreGrid"></div>
+    </div>
+  </div>
+
+  <!-- RIGHT: SUMMARY -->
+  <div class="summary-col">
+    <div class="summary-card">
+      <div class="summary-title">💰 Order Summary</div>
+
+      <!-- SAVINGS METER -->
+      <div class="savings-meter" id="savingsMeter" style="display:none;">
+        <div class="savings-meter-text">🎉 You're saving</div>
+        <div class="savings-amount" id="savingsAmount">$0.00</div>
+        <div class="savings-meter-text">with your member discount!</div>
+      </div>
+
+      <!-- SUMMARY LINES -->
+      <div id="summaryLines"></div>
+
+      <div class="ndiv"></div>
+
+      <!-- COUPON -->
+      <div style="margin-bottom:4px;">
+        <span class="co-label">🏷️ Coupon Code</span>
+        <div class="coupon-row">
+          <input class="coupon-inp" type="text" id="couponInp" placeholder="Enter coupon code...">
+          <button class="coupon-btn" onclick="applyCoupon()">APPLY</button>
+        </div>
+        <div class="coupon-msg" id="couponMsg"></div>
+      </div>
+
+      <!-- TOTALS -->
+      <div id="totalsBlock"></div>
+
+      <div class="ndiv"></div>
+
+      <!-- MEMBERSHIP -->
+      <div class="member-promo" id="memberPromoBox">
+        <div class="member-promo-title">💎 FREE MEMBER = INSTANT SAVINGS!</div>
+        <div class="member-promo-text">Sign up free and unlock member pricing across all eBooks in your cart — save up to 40% instantly!</div>
+        <div class="mp-form">
+          <input class="mp-inp" type="text" id="mpName" placeholder="Your first name">
+          <input class="mp-inp" type="email" id="mpEmail" placeholder="Email address">
+          <button class="mp-btn" onclick="joinMember()">🎉 JOIN FREE & UNLOCK DISCOUNTS</button>
+        </div>
+        <p id="mpErr" style="color:#ff4444;font-size:.72rem;margin-top:6px;display:none;">Please enter your name and valid email.</p>
+      </div>
+      <div class="member-active" id="memberActiveBox">
+        ✅ Member discounts applied to all items!
+      </div>
+
+      <!-- CHECKOUT SECTION -->
+      <div class="checkout-section">
+        <div class="ndiv"></div>
+        <label class="co-label">Your Name</label>
+        <input class="co-inp" type="text" id="coName" placeholder="Full name" oninput="validateCheckout()">
+        <label class="co-label">Email (eBooks delivered here)</label>
+        <input class="co-inp" type="email" id="coEmail" placeholder="Email address" oninput="validateCheckout()">
+        <label class="tnc-row">
+          <input type="checkbox" id="tncCheck" onchange="validateCheckout()">
+          <span>I agree to the <a href="product.html#tnc">Terms & Conditions</a>. I understand all eBooks are digital products delivered via email within 24-48 hours.</span>
+        </label>
+        <button class="checkout-btn" id="checkoutBtn" onclick="completePurchase()" disabled>
+          🔒 COMPLETE ORDER — <span id="btnTotal">$0.00</span>
+        </button>
+        <div class="guarantee-bar">
+          <div class="gbar"><span class="gbar-icon">🛡️</span>30-Day Guarantee</div>
+          <div class="gbar"><span class="gbar-icon">⚡</span>Instant Confirm</div>
+          <div class="gbar"><span class="gbar-icon">📧</span>Email Delivery</div>
+          <div class="gbar"><span class="gbar-icon">🔒</span>Secure Checkout</div>
+        </div>
+        <div class="trust-section">
+          <div class="trust-text">🔒 SSL ENCRYPTED · YOUR DATA IS SAFE</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SUCCESS MODAL -->
+<div class="modal-overlay" id="successModal">
+  <div class="modal">
+    <span class="modal-icon">🎉</span>
+    <div class="modal-title">ORDER CONFIRMED!</div>
+    <div class="modal-sub">Your AI Money Machine bundle is on its way!</div>
+    <div class="modal-text">Your order has been received. Our team will send each eBook to your email address. Get ready to transform your income with AI!</div>
+    <div class="order-summary-box" id="modalSummaryBox"></div>
+    <div class="modal-btns">
+      <button class="btn-modal-primary" onclick="closeAndClear()">🛍️ SHOP MORE</button>
+      <a class="btn-modal-secondary" href="members.html">👤 My Account</a>
+    </div>
+  </div>
+</div>
+
+<script>
+const BOOKS=[
+  {id:1,emoji:"🤖",title:"The AI Profit Blueprint",fullTitle:"The AI Profit Blueprint: 7 Proven Methods to Make Money with AI",price:37.00,memberPrice:24.99},
+  {id:2,emoji:"💬",title:"ChatGPT Cash Machine",fullTitle:"ChatGPT Cash Machine: Build a 6-Figure Business Using AI",price:29.99,memberPrice:19.99},
+  {id:3,emoji:"💰",title:"Passive Income AI Empire",fullTitle:"Passive Income AI Empire: Automate Your Way to Financial Freedom",price:44.99,memberPrice:29.99},
+  {id:4,emoji:"⚡",title:"Prompt Engineering for Profit",fullTitle:"Prompt Engineering for Profit: Turn AI Communication Into a 6-Figure Skill",price:34.99,memberPrice:22.99},
+  {id:5,emoji:"🚀",title:"AI Freelancer's Fortune",fullTitle:"AI Freelancer's Fortune: Land High-Paying Clients with AI-Powered Services",price:27.99,memberPrice:17.99},
+  {id:6,emoji:"👑",title:"Digital Gold: AI Content Empire",fullTitle:"Digital Gold: Monetizing AI-Generated Content at Scale",price:39.99,memberPrice:26.99}
+];
+
+const BOOK_COLORS=['#ff00ff','#00ffff','#39ff14','#ff6600','#bf00ff','#ffff00'];
+const BOOK_BG=['linear-gradient(135deg,#1a0035,#4a0080)','linear-gradient(135deg,#001a32,#004080)','linear-gradient(135deg,#001800,#005000)','linear-gradient(135deg,#1e0800,#602000)','linear-gradient(135deg,#1a0038,#5000a0)','linear-gradient(135deg,#1c1c00,#505000)'];
+
+const COUPONS={'AIRICH10':{type:'pct',value:10},'WELCOME15':{type:'pct',value:15},'BUNDLE20':{type:'pct',value:20},'FREEBOOK':{type:'fixed',value:10}};
+
+let cart=[];
+let isMember=false;
+let memberName='';
+let memberEmail='';
+let couponApplied=null;
+
+function getCart(){return JSON.parse(localStorage.getItem('aistore_cart')||'[]');}
+function saveCart(c){localStorage.setItem('aistore_cart',JSON.stringify(c));}
+
+function addToCart(bookId,format='PDF'){
+  const c=getCart();
+  if(c.find(i=>i.id===bookId)){showToast('Already in cart!');return;}
+  c.push({id:bookId,format});
+  saveCart(c);
+  cart=c;renderAll();showToast('✅ Added to cart!');
+}
+
+function removeFromCart(bookId){
+  const c=getCart().filter(i=>i.id!==bookId);
+  saveCart(c);cart=c;renderAll();showToast('Removed from cart.');
+}
+
+function changeFormat(bookId,format){
+  const c=getCart();
+  const item=c.find(i=>i.id===bookId);
+  if(item){item.format=format;saveCart(c);cart=c;}
+}
+
+function joinMember(){
+  const n=document.getElementById('mpName').value.trim();
+  const e=document.getElementById('mpEmail').value.trim();
+  const err=document.getElementById('mpErr');
+  if(!n||!e||!e.includes('@')){err.style.display='block';return;}
+  err.style.display='none';
+  isMember=true;memberName=n;memberEmail=e;
+  localStorage.setItem('aistore_member',JSON.stringify({name:n,email:e,joined:new Date().toISOString()}));
+  document.getElementById('memberPromoBox').style.display='none';
+  document.getElementById('memberActiveBox').style.display='block';
+  document.getElementById('coName').value=n;
+  document.getElementById('coEmail').value=e;
+  renderSummary();validateCheckout();
+  showToast('💎 Member discount applied to all items!');
+}
+
+function applyCoupon(){
+  const code=document.getElementById('couponInp').value.trim().toUpperCase();
+  const msg=document.getElementById('couponMsg');
+  if(!code){msg.style.cssText='color:#ff4444;';msg.textContent='Enter a coupon code.';return;}
+  if(COUPONS[code]){
+    couponApplied={code,...COUPONS[code]};
+    msg.style.cssText='color:#39ff14;text-shadow:0 0 8px #39ff14;font-weight:700;';
+    msg.textContent=`✅ Code "${code}" applied — ${COUPONS[code].type==='pct'?COUPONS[code].value+'% off':'$'+COUPONS[code].value+' off'}!`;
+    renderSummary();showToast('🎉 Coupon code applied!');
+  } else {
+    couponApplied=null;
+    msg.style.cssText='color:#ff4444;';msg.textContent='❌ Invalid coupon code. Try: AIRICH10, BUNDLE20, or WELCOME15';
+    renderSummary();
+  }
+}
+
+function calcTotals(){
+  let subtotal=0,memberSavings=0,couponDiscount=0;
+  cart.forEach(item=>{
+    const book=BOOKS.find(b=>b.id===item.id);if(!book)return;
+    const price=isMember?book.memberPrice:book.price;
+    subtotal+=price;
+    if(isMember) memberSavings+=(book.price-book.memberPrice);
+  });
+  if(couponApplied){
+    if(couponApplied.type==='pct') couponDiscount=subtotal*(couponApplied.value/100);
+    else couponDiscount=Math.min(couponApplied.value,subtotal);
+  }
+  const total=Math.max(0,subtotal-couponDiscount);
+  return{subtotal,memberSavings,couponDiscount,total,itemCount:cart.length};
+}
+
+function renderAll(){
+  cart=getCart();
+  renderItems();
+  renderSummary();
+  renderAddMore();
+  validateCheckout();
+  const savedMember=localStorage.getItem('aistore_member');
+  if(savedMember){
+    const m=JSON.parse(savedMember);
+    isMember=true;memberName=m.name||'';memberEmail=m.email||'';
+    document.getElementById('memberPromoBox').style.display='none';
+    document.getElementById('memberActiveBox').style.display='block';
+    document.getElementById('coName').value=m.name||'';
+    document.getElementById('coEmail').value=m.email||'';
+  }
+}
+
+function renderItems(){
+  const container=document.getElementById('cartItemsContainer');
+  const countEl=document.getElementById('cartCount');
+  if(!cart.length){
+    countEl.textContent='Your cart is empty';
+    container.innerHTML=`<div class="empty-cart">
+      <div class="empty-icon">🛒</div>
+      <div class="empty-msg">Your cart is empty!<br><span style="font-size:.85rem;color:rgba(255,255,255,.35)">Add some AI Money eBooks to get started.</span></div>
+      <a href="store.html" class="btn-shop">🔥 BROWSE eBOOKS</a>
+    </div>`;
+    document.getElementById('addMoreBar').style.display='none';
+    return;
+  }
+  countEl.textContent=`${cart.length} item${cart.length>1?'s':''} in your cart`;
+  container.innerHTML=cart.map(item=>{
+    const book=BOOKS.find(b=>b.id===item.id);if(!book)return'';
+    const idx=book.id-1;
+    const dispPrice=isMember?book.memberPrice:book.price;
+    return`<div class="cart-item" id="ci-${book.id}">
+      <div class="item-emoji" style="background:${BOOK_BG[idx]}">${book.emoji}</div>
+      <div class="item-body">
+        <div class="item-title">${book.fullTitle}</div>
+        <div class="item-meta">
+          <span class="item-format-badge">📥 ${item.format}</span>
+          ${isMember?'<span class="item-member-badge">💎 MEMBER PRICE</span>':''}
+        </div>
+        <div style="margin-bottom:8px;">
+          <span style="font-size:.72rem;color:rgba(255,255,255,.4);display:block;margin-bottom:4px;">CHANGE FORMAT:</span>
+          <select class="item-format-select" onchange="changeFormat(${book.id},this.value)">
+            <option value="PDF" ${item.format==='PDF'?'selected':''}>📕 PDF</option>
+            <option value="TXT" ${item.format==='TXT'?'selected':''}>📄 TXT</option>
+          </select>
+        </div>
+        <div class="item-price-row">
+          <div>
+            <span class="item-price ${isMember?'member-price':''}">$${dispPrice.toFixed(2)}</span>
+            ${isMember?`<span class="item-orig-price">$${book.price.toFixed(2)}</span>`:''}
+          </div>
+          <button class="remove-btn" onclick="removeFromCart(${book.id})">✕ Remove</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+  document.getElementById('addMoreBar').style.display=cart.length<BOOKS.length?'block':'none';
+}
+
+function renderSummary(){
+  const{subtotal,memberSavings,couponDiscount,total,itemCount}=calcTotals();
+  const linesEl=document.getElementById('summaryLines');
+  const totalsEl=document.getElementById('totalsBlock');
+  const savMeter=document.getElementById('savingsMeter');
+  const savAmt=document.getElementById('savingsAmount');
+  const btnTotal=document.getElementById('btnTotal');
+
+  linesEl.innerHTML=cart.map(item=>{
+    const book=BOOKS.find(b=>b.id===item.id);if(!book)return'';
+    const price=isMember?book.memberPrice:book.price;
+    return`<div class="summary-line">
+      <span class="summary-label">${book.emoji} ${book.title}</span>
+      <span class="summary-value">$${price.toFixed(2)}</span>
+    </div>`;
+  }).join('');
+
+  const totalSavings=memberSavings+couponDiscount;
+  if(totalSavings>0){
+    savMeter.style.display='block';
+    savAmt.textContent=`$${totalSavings.toFixed(2)}`;
+  } else savMeter.style.display='none';
+
+  totalsEl.innerHTML=`
+    ${memberSavings>0?`<div class="summary-line"><span class="summary-label">💎 Member Savings</span><span class="summary-value discount">-$${memberSavings.toFixed(2)}</span></div>`:''}
+    ${couponDiscount>0?`<div class="summary-line"><span class="summary-label">🏷️ Coupon (${couponApplied.code})</span><span class="summary-value discount">-$${couponDiscount.toFixed(2)}</span></div>`:''}
+    <div class="summary-total-row">
+      <span class="summary-total-label">ORDER TOTAL</span>
+      <span class="summary-value total">$${total.toFixed(2)}</span>
+    </div>`;
+  btnTotal.textContent=`$${total.toFixed(2)}`;
+}
+
+function renderAddMore(){
+  const grid=document.getElementById('addMoreGrid');
+  const cartIds=cart.map(i=>i.id);
+  grid.innerHTML=BOOKS.map(b=>{
+    const inCart=cartIds.includes(b.id);
+    return`<div class="book-quick-btn ${inCart?'in-cart':''}" onclick="${inCart?'':'addToCart('+b.id+')'}">
+      <span class="qb-emoji">${b.emoji}</span>
+      ${b.title.split(':')[0]}
+      ${inCart?'<br><span style="color:var(--green);font-size:.65rem;">✓ In Cart</span>':'<br><span style="font-size:.65rem;">+ADD</span>'}
+    </div>`;
+  }).join('');
+}
+
+function validateCheckout(){
+  const name=document.getElementById('coName').value.trim();
+  const email=document.getElementById('coEmail').value.trim();
+  const tnc=document.getElementById('tncCheck').checked;
+  const btn=document.getElementById('checkoutBtn');
+  btn.disabled=!(cart.length && name && email.includes('@') && tnc);
+}
+
+function completePurchase(){
+  const name=document.getElementById('coName').value.trim();
+  const email=document.getElementById('coEmail').value.trim();
+  const tnc=document.getElementById('tncCheck').checked;
+  if(!cart.length||!name||!email.includes('@')||!tnc)return;
+
+  const{total,memberSavings,couponDiscount}=calcTotals();
+  const orderId='ORD-'+Date.now();
+  const orderDate=new Date().toISOString();
+
+  // Build order records
+  const orders=JSON.parse(localStorage.getItem('aistore_orders')||'[]');
+  cart.forEach(item=>{
+    const book=BOOKS.find(b=>b.id===item.id);if(!book)return;
+    const price=isMember?book.memberPrice:book.price;
+    orders.push({
+      id:orderId,date:orderDate,
+      book:book.fullTitle,bookId:book.id,
+      customerName:name,customerEmail:email,
+      format:item.format,price:price.toFixed(2),
+      member:isMember,status:'Pending'
+    });
+  });
+  localStorage.setItem('aistore_orders',JSON.stringify(orders));
+
+  // Save to member history
+  if(isMember){
+    const hist=JSON.parse(localStorage.getItem('aistore_member_history')||'[]');
+    hist.push({orderId,date:orderDate,items:cart.map(i=>{const b=BOOKS.find(x=>x.id===i.id);return{title:b.fullTitle,format:i.format,price:isMember?b.memberPrice:b.price};}),total:total.toFixed(2)});
+    localStorage.setItem('aistore_member_history',JSON.stringify(hist));
+  }
+
+  // Build modal summary
+  const bookList=cart.map(i=>{
+    const b=BOOKS.find(x=>x.id===i.id);
+    return`<strong>${b.emoji} ${b.fullTitle}</strong> (${i.format})`;
+  }).join('<br>');
+  document.getElementById('modalSummaryBox').innerHTML=
+    `<strong>Order ID:</strong> ${orderId}<br>
+     <strong>Customer:</strong> ${name}<br>
+     <strong>Delivery Email:</strong> ${email}<br>
+     <strong>eBooks Ordered:</strong><br>${bookList}<br>
+     <strong>Total Paid:</strong> $${total.toFixed(2)}<br>
+     <strong>Estimated Delivery:</strong> Within 24–48 hours via email`;
+  document.getElementById('successModal').classList.add('show');
+
+  // Open mailto
+  const titles=cart.map(i=>{const b=BOOKS.find(x=>x.id===i.id);return`• ${b.fullTitle} (${i.format})`;}).join('\n');
+  const subject=encodeURIComponent(`📚 New Bundle Order [${orderId}] — ${cart.length} eBook${cart.length>1?'s':''}`);
+  const body=encodeURIComponent(
+    `NEW EBOOK BUNDLE ORDER — AI MONEY MACHINE\n${'='.repeat(50)}\n\n`+
+    `ORDER ID: ${orderId}\nDATE: ${new Date().toLocaleString()}\n\n`+
+    `--- CUSTOMER ---\nName: ${name}\nEmail: ${email}\nMember: ${isMember?'YES (Free Member)':'No'}\n\n`+
+    `--- EBOOKS ORDERED ---\n${titles}\n\n`+
+    `--- FINANCIALS ---\nSubtotal: $${calcTotals().subtotal.toFixed(2)}\n`+
+    `${memberSavings>0?'Member Discount: -$'+memberSavings.toFixed(2)+'\n':''}`+
+    `${couponDiscount>0?'Coupon Discount: -$'+couponDiscount.toFixed(2)+'\n':''}`+
+    `TOTAL: $${total.toFixed(2)}\n\n`+
+    `--- ACTION REQUIRED ---\nPlease email each eBook to: ${email}\n\n${'='.repeat(50)}`
+  );
+  setTimeout(()=>{window.open(`mailto:daniel.fowler@students.maestrocollege.edu?subject=${subject}&body=${body}`,'_blank');},600);
+}
+
+function closeAndClear(){
+  localStorage.removeItem('aistore_cart');
+  document.getElementById('successModal').classList.remove('show');
+  window.location.href='store.html';
+}
+
+function showToast(msg){
+  let t=document.getElementById('toast');
+  if(!t){t=document.createElement('div');t.id='toast';t.style.cssText='position:fixed;bottom:22px;right:22px;background:rgba(57,255,20,.2);border:1px solid #39ff14;color:#39ff14;padding:12px 18px;border-radius:10px;font-size:.85rem;font-weight:700;z-index:9999;transition:all .3s;pointer-events:none;';document.body.appendChild(t);}
+  t.textContent=msg;t.style.opacity='1';t.style.transform='translateY(0)';
+  clearTimeout(t._timer);t._timer=setTimeout(()=>{t.style.opacity='0';t.style.transform='translateY(8px)';},2800);
+}
+
+// Check if coming from product page with a book to add
+window.onload=function(){
+  const params=new URLSearchParams(window.location.search);
+  const addId=parseInt(params.get('add'));
+  const fmt=params.get('format')||'PDF';
+  if(addId){
+    const c=getCart();
+    if(!c.find(i=>i.id===addId)){c.push({id:addId,format:fmt});saveCart(c);}
+  }
+  cart=getCart();
+  const savedMember=localStorage.getItem('aistore_member');
+  if(savedMember){
+    const m=JSON.parse(savedMember);
+    isMember=true;memberName=m.name||'';memberEmail=m.email||'';
+  }
+  renderAll();
+  if(isMember){
+    document.getElementById('memberPromoBox').style.display='none';
+    document.getElementById('memberActiveBox').style.display='block';
+    if(memberName) document.getElementById('coName').value=memberName;
+    if(memberEmail) document.getElementById('coEmail').value=memberEmail;
+  }
+};
+</script>
+</body>
+</html>
