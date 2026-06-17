@@ -272,4 +272,973 @@ select.f-inp option{background:#0a0015;}
   <aside class="sidebar">
     <div class="sb-logo">
       <div class="sb-logo-text">🤖 AI MONEY MACHINE</div>
-      <div class="sb-l
+      <div class="sb-logo-sub">ADMIN CONTROL CENTER</div>
+    </div>
+    <nav class="sb-nav">
+      <div class="sb-section">OVERVIEW</div>
+      <a class="sb-item active" onclick="showPage('dashboard',this)" href="#"><span class="sb-icon">📊</span>Dashboard</a>
+      <a class="sb-item" onclick="showPage('revenue',this)" href="#"><span class="sb-icon">💰</span>Revenue Analytics</a>
+      <div class="sb-divider"></div>
+      <div class="sb-section">MANAGEMENT</div>
+      <a class="sb-item" onclick="showPage('orders',this)" href="#"><span class="sb-icon">📋</span>Orders</a>
+      <a class="sb-item" onclick="showPage('members',this)" href="#"><span class="sb-icon">👥</span>Members</a>
+      <a class="sb-item" onclick="showPage('products',this)" href="#"><span class="sb-icon">📚</span>Products</a>
+      <a class="sb-item" onclick="showPage('coupons',this)" href="#"><span class="sb-icon">🏷️</span>Coupons</a>
+      <div class="sb-divider"></div>
+      <div class="sb-section">TOOLS</div>
+      <a class="sb-item" onclick="showPage('library',this)" href="#"><span class="sb-icon">📁</span>eBook Library</a>
+      <a class="sb-item" onclick="showPage('reports',this)" href="#"><span class="sb-icon">📤</span>Export Reports</a>
+      <div class="sb-divider"></div>
+      <a class="sb-item" href="store.html" target="_blank"><span class="sb-icon">🛍️</span>View Store</a>
+      <a class="sb-item" href="members.html" target="_blank"><span class="sb-icon">💎</span>Members Portal</a>
+    </nav>
+    <div class="sb-bottom">
+      <div class="sb-user">
+        <div class="sb-avatar">A</div>
+        <div><div class="sb-uname">Admin</div><div class="sb-urole">Super Administrator</div></div>
+      </div>
+      <button class="logout-btn" onclick="doLogout()">🚪 Logout</button>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <div class="main">
+    <div class="topbar">
+      <div class="page-title" id="pageTitle">📊 Dashboard</div>
+      <div class="topbar-right">
+        <span class="tb-badge tb-live">● LIVE</span>
+        <span class="tb-time" id="tbTime"></span>
+        <a href="store.html" target="_blank" class="store-link">🛍️ View Store</a>
+      </div>
+    </div>
+    <div class="content">
+
+      <!-- ══════════ DASHBOARD ══════════ -->
+      <div class="page active" id="page-dashboard">
+        <div class="kpi-grid" id="kpiGrid"></div>
+        <div class="chart-grid">
+          <div class="sec-card mb0">
+            <div class="sec-card-title">📈 Revenue — Last 30 Days <span id="revTotalLabel"></span></div>
+            <div class="chart-wrap"><canvas id="chartRevenue"></canvas></div>
+          </div>
+          <div class="sec-card mb0">
+            <div class="sec-card-title">📚 Sales by eBook</div>
+            <div class="chart-wrap"><canvas id="chartByBook"></canvas></div>
+          </div>
+        </div>
+        <div class="chart-grid">
+          <div class="sec-card mb0">
+            <div class="sec-card-title">👥 Member Signups — Last 30 Days</div>
+            <div class="chart-wrap"><canvas id="chartSignups"></canvas></div>
+          </div>
+          <div class="sec-card mb0">
+            <div class="sec-card-title">💳 Member vs Regular Revenue</div>
+            <div class="chart-wrap"><canvas id="chartMemberVsReg"></canvas></div>
+          </div>
+        </div>
+        <div class="sec-card">
+          <div class="sec-card-title">🔥 Recent Orders <span><button class="act-btn ab-copy fz-xs" onclick="showPage('orders',document.querySelectorAll('.sb-item')[3])">View All →</button></span></div>
+          <div class="tbl-wrap"><table class="tbl" id="recentOrdersTbl"></table></div>
+        </div>
+        <div class="grid2">
+          <div class="sec-card mb0">
+            <div class="sec-card-title">🏆 Top Selling eBooks</div>
+            <div id="topBooksBar"></div>
+          </div>
+          <div class="sec-card mb0">
+            <div class="sec-card-title">🏷️ Coupon Performance</div>
+            <div id="couponPerf"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══════════ REVENUE ══════════ -->
+      <div class="page" id="page-revenue">
+        <div class="kpi-grid" id="revKpiGrid"></div>
+        <div class="sec-card">
+          <div class="sec-card-title">📈 Daily Revenue — Last 60 Days <span><select class="f-inp" id="revRangeSelect" onchange="buildRevenueCharts()" style="padding:4px 10px;font-size:.75rem;"><option value="30">Last 30 days</option><option value="60">Last 60 days</option><option value="90">Last 90 days</option></select></span></div>
+          <div style="height:260px;"><canvas id="chartRevLong"></canvas></div>
+        </div>
+        <div class="chart-grid">
+          <div class="sec-card mb0">
+            <div class="sec-card-title">📚 Revenue by eBook</div>
+            <div class="chart-wrap"><canvas id="chartRevByBook"></canvas></div>
+          </div>
+          <div class="sec-card mb0">
+            <div class="sec-card-title">📥 Revenue by Format</div>
+            <div class="chart-wrap"><canvas id="chartRevByFormat"></canvas></div>
+          </div>
+        </div>
+        <div class="sec-card">
+          <div class="sec-card-title">🥇 Top Customers by Revenue</div>
+          <div class="tbl-wrap"><table class="tbl" id="topCustomersTbl"></table></div>
+        </div>
+      </div>
+
+      <!-- ══════════ ORDERS ══════════ -->
+      <div class="page" id="page-orders">
+        <div class="kpi-grid" id="ordersKpiGrid"></div>
+        <div class="sec-card">
+          <div class="sec-card-title">📋 All Orders
+            <div class="flex-row">
+              <button class="act-btn ab-success" onclick="fulfillSelected()">✅ Fulfill Selected</button>
+              <button class="act-btn ab-export" onclick="exportOrders()">📤 Export CSV</button>
+            </div>
+          </div>
+          <div class="filter-bar">
+            <input class="f-inp f-search" type="text" id="orderSearch" placeholder="🔍 Search email, name, or order ID..." oninput="renderOrders()">
+            <select class="f-inp" id="orderStatusF" onchange="renderOrders()"><option value="">All Status</option><option>Pending</option><option>Fulfilled</option></select>
+            <select class="f-inp" id="orderBookF" onchange="renderOrders()"><option value="">All eBooks</option></select>
+            <select class="f-inp" id="orderFormatF" onchange="renderOrders()"><option value="">All Formats</option><option>PDF</option><option>TXT</option></select>
+            <select class="f-inp" id="orderMemberF" onchange="renderOrders()"><option value="">All Customers</option><option value="1">Members Only</option><option value="0">Non-Members</option></select>
+          </div>
+          <div class="tbl-wrap"><table class="tbl" id="ordersTable"></table></div>
+          <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap;">
+            <button class="act-btn ab-del" onclick="clearAllOrders()">🗑 Clear All</button>
+            <span class="fz-xs op4 mt8" id="ordersCount"></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══════════ MEMBERS ══════════ -->
+      <div class="page" id="page-members">
+        <div class="kpi-grid" id="membersKpiGrid"></div>
+        <div class="chart-grid">
+          <div class="sec-card mb0">
+            <div class="sec-card-title">🎯 Member Interests Breakdown</div>
+            <div class="chart-wrap"><canvas id="chartInterests"></canvas></div>
+          </div>
+          <div class="sec-card mb0">
+            <div class="sec-card-title">🎯 Income Goals Distribution</div>
+            <div class="chart-wrap"><canvas id="chartGoals"></canvas></div>
+          </div>
+        </div>
+        <div class="sec-card">
+          <div class="sec-card-title">👥 All Members
+            <div class="flex-row">
+              <button class="act-btn ab-export" onclick="exportMembers()">📤 Export CSV</button>
+            </div>
+          </div>
+          <div class="filter-bar">
+            <input class="f-inp f-search" type="text" id="memberSearch" placeholder="🔍 Search name or email..." oninput="renderMembers()">
+            <select class="f-inp" id="memberNLF" onchange="renderMembers()"><option value="">Newsletter: All</option><option value="1">Subscribed</option><option value="0">Unsubscribed</option></select>
+            <select class="f-inp" id="memberSortF" onchange="renderMembers()"><option value="joined">Sort: Newest</option><option value="spent">Sort: Most Spent</option><option value="orders">Sort: Most Orders</option></select>
+          </div>
+          <div class="tbl-wrap"><table class="tbl" id="membersTable"></table></div>
+        </div>
+      </div>
+
+      <!-- ══════════ PRODUCTS ══════════ -->
+      <div class="page" id="page-products">
+        <div class="kpi-grid" id="productsKpiGrid"></div>
+        <div class="sec-card">
+          <div class="sec-card-title">📚 Manage eBook Products <span>Click "Edit" on any card to update pricing</span></div>
+          <div class="product-grid" id="productGrid"></div>
+        </div>
+      </div>
+
+      <!-- ══════════ COUPONS ══════════ -->
+      <div class="page" id="page-coupons">
+        <div class="kpi-grid" id="couponsKpiGrid"></div>
+        <div class="grid2">
+          <div class="sec-card mb0">
+            <div class="sec-card-title">🏷️ Active Coupons</div>
+            <div class="coupon-grid" id="couponCards"></div>
+          </div>
+          <div class="sec-card mb0">
+            <div class="sec-card-title">➕ Create New Coupon</div>
+            <label class="f-label">Coupon Code</label>
+            <input class="f-field" type="text" id="newCode" placeholder="e.g. SUMMER30" style="text-transform:uppercase;">
+            <label class="f-label">Discount Type</label>
+            <select class="f-field" id="newType"><option value="pct">Percentage (%)</option><option value="fixed">Fixed Amount ($)</option></select>
+            <label class="f-label">Discount Value</label>
+            <input class="f-field" type="number" id="newValue" placeholder="e.g. 25">
+            <label class="f-label">Description</label>
+            <input class="f-field" type="text" id="newDesc" placeholder="e.g. Summer sale 2024">
+            <label class="f-label">Max Uses (0 = unlimited)</label>
+            <input class="f-field" type="number" id="newMax" placeholder="0" value="0">
+            <button class="act-btn ab-success" style="width:100%;padding:11px;font-size:.88rem;" onclick="createCoupon()">✅ CREATE COUPON</button>
+          </div>
+        </div>
+        <div class="sec-card">
+          <div class="sec-card-title">📊 Coupon Usage Analytics</div>
+          <div style="height:200px;"><canvas id="chartCoupons"></canvas></div>
+        </div>
+        <div class="sec-card">
+          <div class="sec-card-title">📋 Coupon Usage Log</div>
+          <div class="tbl-wrap"><table class="tbl" id="couponLogTable"></table></div>
+        </div>
+      </div>
+
+      <!-- ══════════ LIBRARY ══════════ -->
+      <div class="page" id="page-library">
+        <div class="sec-card">
+          <div class="sec-card-title">📁 eBook File Library <span>Files stored in browser localStorage</span></div>
+          <div class="filter-bar">
+            <input class="f-inp f-search" type="text" id="libSearch" placeholder="🔍 Search library..." oninput="renderLibrary()">
+          </div>
+          <div style="border:2px dashed rgba(0,255,255,.25);border-radius:12px;padding:28px;text-align:center;cursor:pointer;transition:all .3s;margin-bottom:18px;" onclick="document.getElementById('libFileInp').click()" id="libDropZone" ondragover="event.preventDefault();this.style.borderColor='var(--cyan)'" ondragleave="this.style.borderColor='rgba(0,255,255,.25)'" ondrop="handleLibDrop(event)">
+            <div style="font-size:2.5rem;margin-bottom:10px;">📁</div>
+            <p style="color:rgba(255,255,255,.55);font-size:.88rem;">Drop PDF or TXT files here, or click to browse</p>
+            <p style="color:rgba(255,255,255,.3);font-size:.75rem;margin-top:4px;">Max 10MB per file</p>
+            <input type="file" id="libFileInp" style="display:none;" accept=".pdf,.txt" multiple onchange="handleLibFiles(this.files)">
+            <div id="libUploadStatus" style="margin-top:10px;color:var(--cyan);font-size:.82rem;font-weight:700;"></div>
+          </div>
+          <div class="tbl-wrap"><table class="tbl" id="libraryTable"></table></div>
+        </div>
+      </div>
+
+      <!-- ══════════ REPORTS ══════════ -->
+      <div class="page" id="page-reports">
+        <div class="sec-card">
+          <div class="sec-card-title">📤 Export Reports</div>
+          <div class="report-grid">
+            <div class="report-card">
+              <span class="rc-icon">📋</span>
+              <div class="rc-title">Orders Report</div>
+              <div class="rc-desc">Full export of all orders including customer details, eBook title, format, price, member status, and fulfillment status.</div>
+              <button class="act-btn ab-export" onclick="exportOrders()">📤 Export CSV</button>
+            </div>
+            <div class="report-card">
+              <span class="rc-icon">👥</span>
+              <div class="rc-title">Members Report</div>
+              <div class="rc-desc">All member records with signup date, email, income goal, interests, newsletter status, and total spend.</div>
+              <button class="act-btn ab-export" onclick="exportMembers()">📤 Export CSV</button>
+            </div>
+            <div class="report-card">
+              <span class="rc-icon">💰</span>
+              <div class="rc-title">Revenue Report</div>
+              <div class="rc-desc">Daily revenue breakdown with member vs non-member split, coupon usage, and net revenue calculations.</div>
+              <button class="act-btn ab-export" onclick="exportRevenue()">📤 Export CSV</button>
+            </div>
+            <div class="report-card">
+              <span class="rc-icon">🏷️</span>
+              <div class="rc-title">Coupon Report</div>
+              <div class="rc-desc">Coupon performance metrics including usage count, total discount given, and revenue impact per code.</div>
+              <button class="act-btn ab-export" onclick="exportCoupons()">📤 Export CSV</button>
+            </div>
+            <div class="report-card">
+              <span class="rc-icon">📚</span>
+              <div class="rc-title">Product Performance</div>
+              <div class="rc-desc">Sales count, revenue generated, and average order value for each eBook product in the catalog.</div>
+              <button class="act-btn ab-export" onclick="exportProducts()">📤 Export CSV</button>
+            </div>
+            <div class="report-card">
+              <span class="rc-icon">📊</span>
+              <div class="rc-title">Full Data Dump</div>
+              <div class="rc-desc">Complete JSON export of all store data — orders, members, library, and coupons — for backup purposes.</div>
+              <button class="act-btn ab-export" onclick="exportAll()">📤 Export JSON</button>
+            </div>
+          </div>
+        </div>
+        <div class="sec-card">
+          <div class="sec-card-title">📋 Report Preview <span id="reportPreviewLabel"></span></div>
+          <div class="filter-bar">
+            <select class="f-inp" id="previewSelect" onchange="buildPreview()">
+              <option value="orders">Orders</option><option value="members">Members</option><option value="revenue">Revenue Summary</option><option value="products">Product Performance</option>
+            </select>
+          </div>
+          <div class="tbl-wrap" id="reportPreviewWrap"></div>
+        </div>
+      </div>
+
+    </div><!-- /content -->
+  </div><!-- /main -->
+</div><!-- /adminApp -->
+
+<!-- EDIT PRODUCT MODAL -->
+<div class="modal-overlay" id="editProductModal">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal('editProductModal')">✕</button>
+    <div class="modal-title">✏️ Edit Product</div>
+    <input type="hidden" id="editBookId">
+    <label class="f-label">Full Title</label>
+    <input class="f-field" type="text" id="editTitle">
+    <div class="f-row">
+      <div>
+        <label class="f-label">Regular Price ($)</label>
+        <input class="f-field" type="number" id="editPrice" step="0.01">
+      </div>
+      <div>
+        <label class="f-label">Member Price ($)</label>
+        <input class="f-field" type="number" id="editMemberPrice" step="0.01">
+      </div>
+    </div>
+    <label class="f-label">Short Description</label>
+    <textarea class="f-field" id="editDesc" rows="3" style="resize:vertical;"></textarea>
+    <div class="flex-row">
+      <button class="act-btn ab-primary" style="padding:10px 24px;" onclick="saveProductEdit()">💾 SAVE CHANGES</button>
+      <button class="act-btn ab-warn" onclick="closeModal('editProductModal')">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ════════════════════════════════════════════
+//  CONSTANTS
+// ════════════════════════════════════════════
+const BOOKS_BASE=[
+  {id:1,emoji:"🤖",title:"The AI Profit Blueprint",fullTitle:"The AI Profit Blueprint: 7 Proven Methods to Make Money with AI",price:37.00,memberPrice:24.99,desc:"7 battle-tested strategies to generate real income using AI tools.",colors:['#ff00ff','#1a0035']},
+  {id:2,emoji:"💬",title:"ChatGPT Cash Machine",fullTitle:"ChatGPT Cash Machine: Build a 6-Figure Business Using AI",price:29.99,memberPrice:19.99,desc:"Build a profitable business using ChatGPT from ghostwriting to agency operations.",colors:['#00ffff','#001a32']},
+  {id:3,emoji:"💰",title:"Passive Income AI Empire",fullTitle:"Passive Income AI Empire: Automate Your Way to Financial Freedom",price:44.99,memberPrice:29.99,desc:"Build automated income streams that work around the clock with AI.",colors:['#39ff14','#001800']},
+  {id:4,emoji:"⚡",title:"Prompt Engineering for Profit",fullTitle:"Prompt Engineering for Profit: Turn AI Communication Into a 6-Figure Skill",price:34.99,memberPrice:22.99,desc:"Master prompt engineering and turn it into a lucrative freelance career.",colors:['#ff6600','#1e0800']},
+  {id:5,emoji:"🚀",title:"AI Freelancer's Fortune",fullTitle:"AI Freelancer's Fortune: Land High-Paying Clients with AI-Powered Services",price:27.99,memberPrice:17.99,desc:"Transform your freelance business with AI tools to command premium rates.",colors:['#bf00ff','#1a0038']},
+  {id:6,emoji:"👑",title:"Digital Gold: AI Content Empire",fullTitle:"Digital Gold: Monetizing AI-Generated Content at Scale",price:39.99,memberPrice:26.99,desc:"Build a content empire across blogs, YouTube, and social media simultaneously.",colors:['#ffff00','#1c1c00']}
+];
+const INTEREST_LABELS={content:'Content Creation',freelance:'Freelancing',automation:'Automation',ecommerce:'E-commerce',prompts:'Prompt Eng.',passive:'Passive Income'};
+const COUPONS_DEFAULT=[
+  {code:'AIRICH10',type:'pct',value:10,desc:'Member welcome discount',max:0,uses:0,revenue:0,created:new Date(Date.now()-30*86400000).toISOString()},
+  {code:'WELCOME15',type:'pct',value:15,desc:'Members exclusive 15% off',max:0,uses:0,revenue:0,created:new Date(Date.now()-20*86400000).toISOString()},
+  {code:'BUNDLE20',type:'pct',value:20,desc:'20% off bundle orders',max:0,uses:0,revenue:0,created:new Date(Date.now()-10*86400000).toISOString()},
+  {code:'FREEBOOK',type:'fixed',value:10,desc:'$10 off any order',max:100,uses:0,revenue:0,created:new Date(Date.now()-5*86400000).toISOString()}
+];
+
+// ════════════════════════════════════════════
+//  DATA LAYER
+// ════════════════════════════════════════════
+function getOrders(){return JSON.parse(localStorage.getItem('aistore_orders')||'[]');}
+function saveOrders(d){localStorage.setItem('aistore_orders',JSON.stringify(d));}
+function getMembers(){
+  const arr=JSON.parse(localStorage.getItem('aistore_members')||'[]');
+  const single=localStorage.getItem('aistore_member');
+  if(single){
+    const m=JSON.parse(single);
+    if(!arr.find(x=>x.email===m.email)) arr.unshift(m);
+  }
+  return arr;
+}
+function getBooks(){return JSON.parse(localStorage.getItem('aistore_books')||JSON.stringify(BOOKS_BASE));}
+function saveBooks(d){localStorage.setItem('aistore_books',JSON.stringify(d));}
+function getCoupons(){
+  const c=JSON.parse(localStorage.getItem('aistore_coupons')||'null');
+  if(!c){localStorage.setItem('aistore_coupons',JSON.stringify(COUPONS_DEFAULT));return COUPONS_DEFAULT;}
+  return c;
+}
+function saveCoupons(d){localStorage.setItem('aistore_coupons',JSON.stringify(d));}
+function getLibrary(){return JSON.parse(localStorage.getItem('aistore_library')||'[]');}
+function saveLibrary(d){localStorage.setItem('aistore_library',JSON.stringify(d));}
+
+// ════════════════════════════════════════════
+//  SEED DEMO DATA
+// ════════════════════════════════════════════
+function seedDemoData(){
+  if(localStorage.getItem('aistore_seeded')) return;
+  const names=[['Sarah','Johnson'],['Mike','Davis'],['Emma','Wilson'],['James','Brown'],['Olivia','Taylor'],['Noah','Anderson'],['Ava','Martinez'],['Liam','Garcia'],['Sophia','Lee'],['Mason','White'],['Isabella','Harris'],['Ethan','Clark'],['Mia','Lewis'],['William','Robinson'],['Charlotte','Walker']];
+  const domains=['gmail.com','yahoo.com','outlook.com','hotmail.com','icloud.com'];
+  const interests=[['content','passive'],['freelance','automation'],['prompts','ecommerce'],['content','freelance'],['automation','passive'],['prompts','content']];
+  const goals=['Extra $500–$1,000/month side income','Replace my job income ($3,000–$6,000/month)','Build a 6-figure AI business ($10,000+/month)','Passive income through AI automation'];
+  const books=getBooks();
+  const orders=getOrders();
+  const members=JSON.parse(localStorage.getItem('aistore_members')||'[]');
+
+  // Seed members
+  for(let i=0;i<names.length;i++){
+    const [fn,ln]=names[i];
+    const email=`${fn.toLowerCase()}.${ln.toLowerCase()}@${domains[i%domains.length]}`;
+    if(!members.find(m=>m.email===email)){
+      members.push({
+        firstName:fn,lastName:ln,name:fn+' '+ln,email,
+        goal:goals[i%goals.length],interests:interests[i%interests.length],
+        newsletter:i%4!==0,joined:new Date(Date.now()-(30-i)*86400000).toISOString(),
+        referralCode:'AIREF-'+Math.random().toString(36).substr(2,8).toUpperCase()
+      });
+    }
+  }
+  localStorage.setItem('aistore_members',JSON.stringify(members));
+
+  // Seed orders
+  const bookIds=[1,2,3,4,5,6];
+  const formats=['PDF','TXT'];
+  const statuses=['Fulfilled','Fulfilled','Fulfilled','Pending'];
+  for(let i=0;i<30;i++){
+    const member=members[i%members.length];
+    const bookId=bookIds[i%bookIds.length];
+    const book=books.find(b=>b.id===bookId);
+    const isMem=i%3!==0;
+    const price=isMem?book.memberPrice:book.price;
+    orders.push({
+      id:'ORD-SEED'+String(i+1).padStart(3,'0'),
+      date:new Date(Date.now()-(29-Math.floor(i/1.5))*86400000-(i*3600000)).toISOString(),
+      book:book.fullTitle,bookId:book.id,
+      customerName:member.name,customerEmail:member.email,
+      format:formats[i%formats.length],price:price.toFixed(2),
+      member:isMem,status:statuses[i%statuses.length]
+    });
+  }
+  saveOrders(orders);
+
+  // Seed coupon usage
+  const coupons=getCoupons();
+  const codes=['AIRICH10','WELCOME15','BUNDLE20','FREEBOOK'];
+  const usages=[7,4,11,3];
+  coupons.forEach((c,i)=>{c.uses=usages[i];c.revenue=usages[i]*30;});
+  saveCoupons(coupons);
+
+  localStorage.setItem('aistore_seeded','1');
+}
+
+// ════════════════════════════════════════════
+//  AUTH
+// ════════════════════════════════════════════
+function doLogin(){
+  const u=document.getElementById('lUser').value.trim();
+  const p=document.getElementById('lPass').value.trim();
+  if(u==='admin'&&p==='AIMoney@2024'){
+    document.getElementById('loginScreen').style.display='none';
+    document.getElementById('adminApp').style.display='block';
+    seedDemoData();
+    initDashboard();
+    startClock();
+  } else {
+    document.getElementById('lErr').textContent='❌ Invalid credentials.';
+  }
+}
+function doLogout(){
+  document.getElementById('loginScreen').style.display='flex';
+  document.getElementById('adminApp').style.display='none';
+  document.getElementById('lUser').value='';
+  document.getElementById('lPass').value='';
+}
+function startClock(){
+  function tick(){document.getElementById('tbTime').textContent=new Date().toLocaleTimeString();}
+  tick();setInterval(tick,1000);
+}
+
+// ════════════════════════════════════════════
+//  PAGE ROUTING
+// ════════════════════════════════════════════
+const PAGE_TITLES={dashboard:'📊 Dashboard',revenue:'💰 Revenue Analytics',orders:'📋 Orders',members:'👥 Members',products:'📚 Products',coupons:'🏷️ Coupons',library:'📁 eBook Library',reports:'📤 Export Reports'};
+const PAGE_BUILDERS={dashboard:buildDashboard,revenue:buildRevenuePage,orders:buildOrdersPage,members:buildMembersPage,products:buildProductsPage,coupons:buildCouponsPage,library:buildLibraryPage,reports:buildReportsPage};
+
+function showPage(name,el){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.sb-item').forEach(n=>n.classList.remove('active'));
+  document.getElementById('page-'+name).classList.add('active');
+  if(el) el.classList.add('active');
+  document.getElementById('pageTitle').textContent=PAGE_TITLES[name]||name;
+  if(PAGE_BUILDERS[name]) PAGE_BUILDERS[name]();
+}
+
+// ════════════════════════════════════════════
+//  HELPERS
+// ════════════════════════════════════════════
+function fmt$(v){return'$'+parseFloat(v||0).toFixed(2);}
+function fmtDate(d){return new Date(d).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});}
+function fmtDT(d){return new Date(d).toLocaleString('en-US',{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'});}
+function showToast(msg,type='g'){
+  const t=document.getElementById('toast');
+  t.className=`toast toast-${type}`;t.textContent=msg;t.classList.add('show');
+  clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),3200);
+}
+function closeModal(id){document.getElementById(id).classList.remove('show');}
+function downloadCSV(filename,rows){
+  const csv=rows.map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
+  const blob=new Blob([csv],{type:'text/csv'});
+  const a=Object.assign(document.createElement('a'),{href:URL.createObjectURL(blob),download:filename});
+  a.click();showToast(`📤 ${filename} downloaded!`,'c');
+}
+function miniBar(label,val,max,color){
+  const pct=max?Math.round(val/max*100):0;
+  return`<div class="mini-bar-wrap"><div class="mini-bar-label"><span>${label}</span><span>${val} (${pct}%)</span></div><div class="mini-bar"><div class="mini-bar-fill" style="width:${pct}%;background:${color};"></div></div></div>`;
+}
+function calcStats(){
+  const orders=getOrders();
+  const members=getMembers();
+  const revenue=orders.reduce((s,o)=>s+parseFloat(o.price||0),0);
+  const memberOrders=orders.filter(o=>o.member).length;
+  const pending=orders.filter(o=>o.status==='Pending').length;
+  const avgOrder=orders.length?revenue/orders.length:0;
+  // Revenue last 30 days
+  const cutoff=Date.now()-30*86400000;
+  const recent=orders.filter(o=>new Date(o.date).getTime()>cutoff);
+  const recentRev=recent.reduce((s,o)=>s+parseFloat(o.price||0),0);
+  return{orders,members,revenue,memberOrders,pending,avgOrder,recent,recentRev};
+}
+
+// ════════════════════════════════════════════
+//  CHART CONFIG
+// ════════════════════════════════════════════
+const chartDefaults={
+  plugins:{legend:{labels:{color:'rgba(255,255,255,.6)',font:{size:11}}}},
+  scales:{x:{ticks:{color:'rgba(255,255,255,.45)',font:{size:10}},grid:{color:'rgba(255,255,255,.05)'}},y:{ticks:{color:'rgba(255,255,255,.45)',font:{size:10}},grid:{color:'rgba(255,255,255,.07)'}}}
+};
+const chartsRegistry={};
+function makeChart(id,config){
+  if(chartsRegistry[id]) chartsRegistry[id].destroy();
+  const ctx=document.getElementById(id);
+  if(!ctx) return;
+  chartsRegistry[id]=new Chart(ctx,config);
+}
+function getLast30Days(){
+  return Array.from({length:30},(_,i)=>{const d=new Date(Date.now()-(29-i)*86400000);return d.toLocaleDateString('en-US',{month:'short',day:'numeric'});});
+}
+
+// ════════════════════════════════════════════
+//  DASHBOARD
+// ════════════════════════════════════════════
+function initDashboard(){buildDashboard();}
+
+function buildDashboard(){
+  const{orders,members,revenue,memberOrders,pending,avgOrder,recent,recentRev}=calcStats();
+  const books=getBooks();
+  // KPIs
+  document.getElementById('kpiGrid').innerHTML=`
+    <div class="kpi"><div class="kpi-icon">💰</div><div class="kpi-label">Total Revenue</div><div class="kpi-value">${fmt$(revenue)}</div><div class="kpi-sub">Last 30d: ${fmt$(recentRev)}</div><span class="kpi-trend trend-up">+${Math.round(recentRev/Math.max(revenue-recentRev,1)*100)||'N/A'}%</span></div>
+    <div class="kpi"><div class="kpi-icon">📦</div><div class="kpi-label">Total Orders</div><div class="kpi-value">${orders.length}</div><div class="kpi-sub">${pending} pending fulfillment</div><span class="kpi-trend trend-${pending>5?'dn':'up'}">${pending} pending</span></div>
+    <div class="kpi"><div class="kpi-icon">👥</div><div class="kpi-label">Total Members</div><div class="kpi-value">${members.length}</div><div class="kpi-sub">${Math.round(members.filter(m=>m.newsletter!==false).length/Math.max(members.length,1)*100)}% newsletter sub</div><span class="kpi-trend trend-up">Active</span></div>
+    <div class="kpi"><div class="kpi-icon">💳</div><div class="kpi-label">Avg Order Value</div><div class="kpi-value">${fmt$(avgOrder)}</div><div class="kpi-sub">Member rate: ${Math.round(memberOrders/Math.max(orders.length,1)*100)}%</div><span class="kpi-trend trend-up">Healthy</span></div>
+    <div class="kpi"><div class="kpi-icon">⏳</div><div class="kpi-label">Pending Orders</div><div class="kpi-value">${pending}</div><div class="kpi-sub">Need fulfillment action</div><span class="kpi-trend trend-${pending>5?'dn':'up'}">${pending>5?'⚠️ Action':'✅ OK'}</span></div>
+    <div class="kpi"><div class="kpi-icon">🎁</div><div class="kpi-label">Member Savings Given</div><div class="kpi-value">${fmt$(orders.filter(o=>o.member).reduce((s,o)=>{const b=books.find(x=>x.id===o.bookId);return s+(b?b.price-b.memberPrice:0);},0))}</div><div class="kpi-sub">Total discount to members</div><span class="kpi-trend trend-up">💎 Value</span></div>`;
+  // Revenue chart
+  const days=getLast30Days();
+  const revByDay=days.map(label=>{
+    return orders.filter(o=>new Date(o.date).toLocaleDateString('en-US',{month:'short',day:'numeric'})===label).reduce((s,o)=>s+parseFloat(o.price||0),0);
+  });
+  document.getElementById('revTotalLabel').textContent=`Total: ${fmt$(revenue)}`;
+  makeChart('chartRevenue',{type:'line',data:{labels:days,datasets:[{label:'Revenue',data:revByDay,borderColor:'#00ffff',backgroundColor:'rgba(0,255,255,.08)',tension:.35,fill:true,pointRadius:3,pointBackgroundColor:'#00ffff'}]},options:{...chartDefaults,plugins:{legend:{display:false}},maintainAspectRatio:false}});
+  // By book pie
+  const bookSales=books.map(b=>orders.filter(o=>o.bookId===b.id).length);
+  makeChart('chartByBook',{type:'doughnut',data:{labels:books.map(b=>b.emoji+' '+b.title.split(':')[0]),datasets:[{data:bookSales,backgroundColor:['rgba(255,0,255,.7)','rgba(0,255,255,.7)','rgba(57,255,20,.7)','rgba(255,102,0,.7)','rgba(191,0,255,.7)','rgba(255,255,0,.7)'],borderColor:'rgba(0,0,0,.5)',borderWidth:2}]},options:{maintainAspectRatio:false,plugins:{legend:{labels:{color:'rgba(255,255,255,.6)',font:{size:10}}}}}});
+  // Signups
+  const signups=days.map(label=>{
+    return getMembers().filter(m=>new Date(m.joined).toLocaleDateString('en-US',{month:'short',day:'numeric'})===label).length;
+  });
+  makeChart('chartSignups',{type:'bar',data:{labels:days,datasets:[{label:'Signups',data:signups,backgroundColor:'rgba(191,0,255,.5)',borderColor:var_purple,borderWidth:1,borderRadius:4}]},options:{...chartDefaults,plugins:{legend:{display:false}},maintainAspectRatio:false}});
+  // Member vs Regular
+  const memRev=orders.filter(o=>o.member).reduce((s,o)=>s+parseFloat(o.price||0),0);
+  const regRev=orders.filter(o=>!o.member).reduce((s,o)=>s+parseFloat(o.price||0),0);
+  makeChart('chartMemberVsReg',{type:'doughnut',data:{labels:['💎 Member Revenue','👤 Regular Revenue'],datasets:[{data:[memRev,regRev],backgroundColor:['rgba(57,255,20,.7)','rgba(255,0,255,.7)'],borderColor:'rgba(0,0,0,.5)',borderWidth:2}]},options:{maintainAspectRatio:false,plugins:{legend:{labels:{color:'rgba(255,255,255,.6)',font:{size:11}}}}}});
+  // Recent orders table
+  const recent5=getOrders().slice(-5).reverse();
+  document.getElementById('recentOrdersTbl').innerHTML=`<thead><tr><th>Order ID</th><th>Customer</th><th>eBook</th><th>Format</th><th>Price</th><th>Member</th><th>Status</th><th>Date</th></tr></thead><tbody>${recent5.map(o=>`<tr><td class="text-cyan fz-xs" style="font-family:monospace">${o.id}</td><td><div class="fw9" style="font-size:.82rem;">${o.customerName||'-'}</div><div class="fz-xs op4">${o.customerEmail}</div></td><td class="fz-xs">${books.find(b=>b.id===o.bookId)?.emoji||'📚'} ${(o.book||'').split(':')[0]}</td><td><span class="badge b-cyan">${o.format||'PDF'}</span></td><td class="text-green fw9">${fmt$(o.price)}</td><td>${o.member?'<span class="badge b-green">💎 Yes</span>':'<span class="fz-xs op4">No</span>'}</td><td><span class="badge ${o.status==='Fulfilled'?'b-green':'b-orange'}">${o.status||'Pending'}</span></td><td class="fz-xs op4">${fmtDate(o.date)}</td></tr>`).join('')}</tbody>`;
+  // Top books bar
+  const maxSales=Math.max(...bookSales,1);
+  document.getElementById('topBooksBar').innerHTML=books.map((b,i)=>miniBar(b.emoji+' '+b.title.split(':')[0],bookSales[i],maxSales,['#ff00ff','#00ffff','#39ff14','#ff6600','#bf00ff','#ffff00'][i])).join('');
+  // Coupon perf
+  const coupons=getCoupons();
+  const maxUses=Math.max(...coupons.map(c=>c.uses),1);
+  document.getElementById('couponPerf').innerHTML=coupons.map(c=>miniBar(c.code,c.uses,maxUses,'#ffff00')).join('');
+}
+const var_purple='#bf00ff';
+
+// ════════════════════════════════════════════
+//  REVENUE PAGE
+// ════════════════════════════════════════════
+function buildRevenuePage(){
+  const orders=getOrders();
+  const books=getBooks();
+  const revenue=orders.reduce((s,o)=>s+parseFloat(o.price||0),0);
+  const memberRev=orders.filter(o=>o.member).reduce((s,o)=>s+parseFloat(o.price||0),0);
+  const pdfRev=orders.filter(o=>o.format==='PDF').reduce((s,o)=>s+parseFloat(o.price||0),0);
+  const avgOrder=orders.length?revenue/orders.length:0;
+  document.getElementById('revKpiGrid').innerHTML=`
+    <div class="kpi"><div class="kpi-icon">💰</div><div class="kpi-label">Total Revenue</div><div class="kpi-value">${fmt$(revenue)}</div><div class="kpi-sub">All time gross</div></div>
+    <div class="kpi"><div class="kpi-icon">💎</div><div class="kpi-label">Member Revenue</div><div class="kpi-value">${fmt$(memberRev)}</div><div class="kpi-sub">${Math.round(memberRev/Math.max(revenue,1)*100)}% of total</div></div>
+    <div class="kpi"><div class="kpi-icon">📊</div><div class="kpi-label">Avg Order Value</div><div class="kpi-value">${fmt$(avgOrder)}</div><div class="kpi-sub">Per transaction</div></div>
+    <div class="kpi"><div class="kpi-icon">📕</div><div class="kpi-label">PDF Revenue</div><div class="kpi-value">${fmt$(pdfRev)}</div><div class="kpi-sub">${Math.round(pdfRev/Math.max(revenue,1)*100)}% PDF preference</div></div>`;
+  buildRevenueCharts();
+  // Top customers
+  const byCustomer={};
+  orders.forEach(o=>{if(!byCustomer[o.customerEmail])byCustomer[o.customerEmail]={name:o.customerName,email:o.customerEmail,spent:0,orders:0,member:o.member};byCustomer[o.customerEmail].spent+=parseFloat(o.price||0);byCustomer[o.customerEmail].orders++;});
+  const topC=Object.values(byCustomer).sort((a,b)=>b.spent-a.spent).slice(0,10);
+  document.getElementById('topCustomersTbl').innerHTML=`<thead><tr><th>#</th><th>Customer</th><th>Orders</th><th>Total Spent</th><th>Member</th></tr></thead><tbody>${topC.map((c,i)=>`<tr><td class="fw9 text-cyan">${i+1}</td><td><div class="fw9 fz-sm">${c.name}</div><div class="fz-xs op4">${c.email}</div></td><td>${c.orders}</td><td class="text-green fw9">${fmt$(c.spent)}</td><td>${c.member?'<span class="badge b-green">💎 Yes</span>':'<span class="fz-xs op4">No</span>'}</td></tr>`).join('')}</tbody>`;
+}
+function buildRevenueCharts(){
+  const orders=getOrders();
+  const books=getBooks();
+  const days=parseInt(document.getElementById('revRangeSelect')?.value||30);
+  const labels=Array.from({length:days},(_,i)=>{const d=new Date(Date.now()-(days-1-i)*86400000);return d.toLocaleDateString('en-US',{month:'short',day:'numeric'});});
+  const revByDay=labels.map(label=>orders.filter(o=>new Date(o.date).toLocaleDateString('en-US',{month:'short',day:'numeric'})===label).reduce((s,o)=>s+parseFloat(o.price||0),0));
+  makeChart('chartRevLong',{type:'line',data:{labels,datasets:[{label:'Daily Revenue',data:revByDay,borderColor:'#39ff14',backgroundColor:'rgba(57,255,20,.08)',tension:.35,fill:true,pointRadius:2}]},options:{...chartDefaults,maintainAspectRatio:false}});
+  const bookRev=books.map(b=>orders.filter(o=>o.bookId===b.id).reduce((s,o)=>s+parseFloat(o.price||0),0));
+  makeChart('chartRevByBook',{type:'bar',data:{labels:books.map(b=>b.emoji+' '+b.title.split(':')[0]),datasets:[{label:'Revenue',data:bookRev,backgroundColor:['rgba(255,0,255,.6)','rgba(0,255,255,.6)','rgba(57,255,20,.6)','rgba(255,102,0,.6)','rgba(191,0,255,.6)','rgba(255,255,0,.6)'],borderRadius:6}]},options:{...chartDefaults,plugins:{legend:{display:false}},maintainAspectRatio:false}});
+  const pdfR=orders.filter(o=>o.format==='PDF').reduce((s,o)=>s+parseFloat(o.price||0),0);
+  const txtR=orders.filter(o=>o.format==='TXT').reduce((s,o)=>s+parseFloat(o.price||0),0);
+  makeChart('chartRevByFormat',{type:'doughnut',data:{labels:['📕 PDF','📄 TXT'],datasets:[{data:[pdfR,txtR],backgroundColor:['rgba(255,0,255,.7)','rgba(0,255,255,.7)'],borderColor:'rgba(0,0,0,.5)',borderWidth:2}]},options:{maintainAspectRatio:false,plugins:{legend:{labels:{color:'rgba(255,255,255,.6)'}}}}});
+}
+
+// ════════════════════════════════════════════
+//  ORDERS PAGE
+// ════════════════════════════════════════════
+function buildOrdersPage(){
+  const books=getBooks();
+  const sel=document.getElementById('orderBookF');
+  sel.innerHTML='<option value="">All eBooks</option>'+books.map(b=>`<option value="${b.id}">${b.emoji} ${b.title.split(':')[0]}</option>`).join('');
+  const orders=getOrders();
+  const revenue=orders.reduce((s,o)=>s+parseFloat(o.price||0),0);
+  const pending=orders.filter(o=>o.status==='Pending').length;
+  document.getElementById('ordersKpiGrid').innerHTML=`
+    <div class="kpi"><div class="kpi-icon">📦</div><div class="kpi-label">Total Orders</div><div class="kpi-value">${orders.length}</div></div>
+    <div class="kpi"><div class="kpi-icon">⏳</div><div class="kpi-label">Pending</div><div class="kpi-value">${pending}</div></div>
+    <div class="kpi"><div class="kpi-icon">✅</div><div class="kpi-label">Fulfilled</div><div class="kpi-value">${orders.length-pending}</div></div>
+    <div class="kpi"><div class="kpi-icon">💰</div><div class="kpi-label">Total Revenue</div><div class="kpi-value">${fmt$(revenue)}</div></div>`;
+  renderOrders();
+}
+
+let selectedOrders=new Set();
+function renderOrders(){
+  let orders=getOrders();
+  const search=(document.getElementById('orderSearch')?.value||'').toLowerCase();
+  const status=document.getElementById('orderStatusF')?.value||'';
+  const bookId=document.getElementById('orderBookF')?.value||'';
+  const format=document.getElementById('orderFormatF')?.value||'';
+  const memberF=document.getElementById('orderMemberF')?.value||'';
+  if(search) orders=orders.filter(o=>(o.customerEmail||'').toLowerCase().includes(search)||(o.customerName||'').toLowerCase().includes(search)||(o.id||'').toLowerCase().includes(search));
+  if(status) orders=orders.filter(o=>o.status===status);
+  if(bookId) orders=orders.filter(o=>o.bookId==bookId);
+  if(format) orders=orders.filter(o=>o.format===format);
+  if(memberF==='1') orders=orders.filter(o=>o.member);
+  if(memberF==='0') orders=orders.filter(o=>!o.member);
+  orders=[...orders].reverse();
+  document.getElementById('ordersCount').textContent=`${orders.length} order${orders.length!==1?'s':''} shown`;
+  const tbl=document.getElementById('ordersTable');
+  if(!orders.length){tbl.innerHTML='<tr><td colspan="10"><div class="empty-state"><div class="empty-icon">📭</div><p>No orders match filters.</p></div></td></tr>';return;}
+  tbl.innerHTML=`<thead><tr><th><input type="checkbox" onchange="toggleAllOrders(this)" style="accent-color:var(--cyan)"></th><th>Order ID</th><th>Date</th><th>Customer</th><th>eBook</th><th>Fmt</th><th>Price</th><th>Member</th><th>Status</th><th>Actions</th></tr></thead><tbody>${orders.map(o=>`<tr>
+    <td><input type="checkbox" value="${o.id}" class="order-check" style="accent-color:var(--cyan)"></td>
+    <td class="text-cyan fz-xs" style="font-family:monospace;">${o.id}</td>
+    <td class="fz-xs op4">${fmtDT(o.date)}</td>
+    <td><div class="fw9 fz-sm">${o.customerName||'-'}</div><div class="fz-xs op4">${o.customerEmail} <button class="act-btn ab-copy" style="padding:2px 6px;font-size:.65rem;" onclick="copyText('${o.customerEmail}')">Copy</button></div></td>
+    <td class="fz-xs">${getBooks().find(b=>b.id===o.bookId)?.emoji||'📚'} ${(o.book||'').split(':')[0]}</td>
+    <td><span class="badge b-cyan">${o.format||'PDF'}</span></td>
+    <td class="text-green fw9">${fmt$(o.price)}</td>
+    <td>${o.member?'<span class="badge b-green">💎</span>':'<span class="fz-xs op4">—</span>'}</td>
+    <td><span class="badge ${o.status==='Fulfilled'?'b-green':'b-orange'}">${o.status||'Pending'}</span></td>
+    <td style="white-space:nowrap;">
+      ${o.status!=='Fulfilled'?`<button class="act-btn ab-fulfill" style="font-size:.7rem;padding:4px 8px;" onclick="fulfillOne('${o.id}')">✅</button>`:''}
+      <button class="act-btn ab-email" style="font-size:.7rem;padding:4px 8px;" onclick="emailCustomer('${o.customerEmail}','${o.book?.replace(/'/g,"\\'")||''}','${o.format||'PDF'}')">📧</button>
+      <button class="act-btn ab-del" style="font-size:.7rem;padding:4px 8px;" onclick="deleteOrder('${o.id}')">🗑</button>
+    </td></tr>`).join('')}</tbody>`;
+}
+function toggleAllOrders(cb){document.querySelectorAll('.order-check').forEach(c=>c.checked=cb.checked);}
+function fulfillSelected(){
+  const ids=[...document.querySelectorAll('.order-check:checked')].map(c=>c.value);
+  if(!ids.length){showToast('Select orders first.','r');return;}
+  const orders=getOrders();
+  orders.forEach(o=>{if(ids.includes(o.id))o.status='Fulfilled';});
+  saveOrders(orders);renderOrders();showToast(`✅ ${ids.length} order${ids.length>1?'s':''} fulfilled!`);
+}
+function fulfillOne(id){const orders=getOrders();const o=orders.find(x=>x.id===id);if(o){o.status='Fulfilled';saveOrders(orders);renderOrders();showToast('✅ Order fulfilled!');}}
+function deleteOrder(id){if(!confirm('Delete this order?'))return;saveOrders(getOrders().filter(o=>o.id!==id));renderOrders();showToast('🗑 Order deleted.','r');}
+function clearAllOrders(){if(!confirm('Delete ALL orders?'))return;saveOrders([]);renderOrders();showToast('🗑 All orders cleared.','r');}
+function emailCustomer(email,book,format){
+  const s=encodeURIComponent(`Your "${book}" eBook is Ready! 🎉`);
+  const b=encodeURIComponent(`Hello,\n\nYour eBook is attached.\n\n📚 Title: ${book}\n📥 Format: ${format}\n\nThank you!\nAI Money Machine Team`);
+  window.open(`mailto:${email}?subject=${s}&body=${b}`,'_blank');
+  showToast('📧 Email client opened!','c');
+}
+function copyText(t){navigator.clipboard.writeText(t).then(()=>showToast('📋 Copied!','c'));}
+
+// ════════════════════════════════════════════
+//  MEMBERS PAGE
+// ════════════════════════════════════════════
+function buildMembersPage(){
+  const members=getMembers();
+  const orders=getOrders();
+  const nlCount=members.filter(m=>m.newsletter!==false).length;
+  const thisMonth=members.filter(m=>new Date(m.joined).getMonth()===new Date().getMonth()).length;
+  document.getElementById('membersKpiGrid').innerHTML=`
+    <div class="kpi"><div class="kpi-icon">👥</div><div class="kpi-label">Total Members</div><div class="kpi-value">${members.length}</div></div>
+    <div class="kpi"><div class="kpi-icon">🆕</div><div class="kpi-label">This Month</div><div class="kpi-value">${thisMonth}</div></div>
+    <div class="kpi"><div class="kpi-icon">📰</div><div class="kpi-label">Subscribed</div><div class="kpi-value">${nlCount}</div><div class="kpi-sub">${Math.round(nlCount/Math.max(members.length,1)*100)}% rate</div></div>
+    <div class="kpi"><div class="kpi-icon">💰</div><div class="kpi-label">Avg Member Spend</div><div class="kpi-value">${fmt$(orders.filter(o=>o.member).reduce((s,o)=>s+parseFloat(o.price||0),0)/Math.max(members.length,1))}</div></div>`;
+
+  // Interests chart
+  const interestCounts={};
+  members.forEach(m=>(m.interests||[]).forEach(i=>{interestCounts[i]=(interestCounts[i]||0)+1;}));
+  const iLabels=Object.keys(interestCounts).map(k=>INTEREST_LABELS[k]||k);
+  const iData=Object.values(interestCounts);
+  makeChart('chartInterests',{type:'bar',data:{labels:iLabels,datasets:[{label:'Members',data:iData,backgroundColor:['rgba(255,0,255,.6)','rgba(0,255,255,.6)','rgba(57,255,20,.6)','rgba(255,102,0,.6)','rgba(191,0,255,.6)','rgba(255,255,0,.6)'],borderRadius:6}]},options:{...chartDefaults,plugins:{legend:{display:false}},maintainAspectRatio:false}});
+
+  // Goals chart
+  const goalCounts={};
+  members.forEach(m=>{const g=(m.goal||'Unknown').split('(')[0].trim();goalCounts[g]=(goalCounts[g]||0)+1;});
+  makeChart('chartGoals',{type:'doughnut',data:{labels:Object.keys(goalCounts),datasets:[{data:Object.values(goalCounts),backgroundColor:['rgba(255,0,255,.7)','rgba(0,255,255,.7)','rgba(57,255,20,.7)','rgba(255,102,0,.7)','rgba(191,0,255,.7)'],borderColor:'rgba(0,0,0,.4)',borderWidth:2}]},options:{maintainAspectRatio:false,plugins:{legend:{labels:{color:'rgba(255,255,255,.5)',font:{size:10}}}}}});
+  renderMembers();
+}
+function renderMembers(){
+  let members=getMembers();
+  const orders=getOrders();
+  const search=(document.getElementById('memberSearch')?.value||'').toLowerCase();
+  const nlF=document.getElementById('memberNLF')?.value||'';
+  const sortF=document.getElementById('memberSortF')?.value||'joined';
+  if(search) members=members.filter(m=>(m.name||'').toLowerCase().includes(search)||(m.email||'').toLowerCase().includes(search));
+  if(nlF==='1') members=members.filter(m=>m.newsletter!==false);
+  if(nlF==='0') members=members.filter(m=>m.newsletter===false);
+  members=members.map(m=>{
+    const mOrders=orders.filter(o=>o.customerEmail===m.email);
+    return{...m,orderCount:mOrders.length,totalSpent:mOrders.reduce((s,o)=>s+parseFloat(o.price||0),0)};
+  });
+  if(sortF==='spent') members.sort((a,b)=>b.totalSpent-a.totalSpent);
+  else if(sortF==='orders') members.sort((a,b)=>b.orderCount-a.orderCount);
+  else members.sort((a,b)=>new Date(b.joined)-new Date(a.joined));
+  const tbl=document.getElementById('membersTable');
+  if(!members.length){tbl.innerHTML='<tr><td colspan="8"><div class="empty-state"><div class="empty-icon">👤</div><p>No members found.</p></div></td></tr>';return;}
+  tbl.innerHTML=`<thead><tr><th>#</th><th>Name</th><th>Email</th><th>Joined</th><th>Interests</th><th>Goal</th><th>Orders</th><th>Spent</th><th>Newsletter</th></tr></thead><tbody>${members.map((m,i)=>`<tr>
+    <td class="op4 fz-xs">${i+1}</td>
+    <td class="fw9 fz-sm">${m.name||m.firstName||'—'}</td>
+    <td class="fz-xs"><span style="color:rgba(255,255,255,.6);">${m.email}</span> <button class="act-btn ab-copy" style="padding:2px 5px;font-size:.62rem;" onclick="copyText('${m.email}')">📋</button></td>
+    <td class="fz-xs op4">${fmtDate(m.joined)}</td>
+    <td class="fz-xs">${(m.interests||[]).map(i=>`<span class="badge b-purple" style="margin:1px;">${INTEREST_LABELS[i]||i}</span>`).join('') ||'<span class="op4">—</span>'}</td>
+    <td class="fz-xs" style="max-width:130px;color:rgba(255,255,255,.55);">${(m.goal||'—').split('(')[0].trim()}</td>
+    <td class="fw9 text-cyan">${m.orderCount}</td>
+    <td class="fw9 text-green">${fmt$(m.totalSpent)}</td>
+    <td>${m.newsletter!==false?'<span class="badge b-green">✅ Yes</span>':'<span class="badge b-red">❌ No</span>'}</td>
+  </tr>`).join('')}</tbody>`;
+}
+
+// ════════════════════════════════════════════
+//  PRODUCTS PAGE
+// ════════════════════════════════════════════
+function buildProductsPage(){
+  const books=getBooks();
+  const orders=getOrders();
+  const totalRev=orders.reduce((s,o)=>s+parseFloat(o.price||0),0);
+  const bestBook=books.map(b=>({b,sales:orders.filter(o=>o.bookId===b.id).length})).sort((a,z)=>z.sales-a.sales)[0]?.b;
+  document.getElementById('productsKpiGrid').innerHTML=`
+    <div class="kpi"><div class="kpi-icon">📚</div><div class="kpi-label">Products</div><div class="kpi-value">${books.length}</div></div>
+    <div class="kpi"><div class="kpi-icon">🏆</div><div class="kpi-label">Best Seller</div><div class="kpi-value" style="font-size:1rem;">${bestBook?.emoji||'?'} ${bestBook?.title.split(':')[0]||'—'}</div></div>
+    <div class="kpi"><div class="kpi-icon">💰</div><div class="kpi-label">Total Revenue</div><div class="kpi-value">${fmt$(totalRev)}</div></div>
+    <div class="kpi"><div class="kpi-icon">📊</div><div class="kpi-label">Total Sales</div><div class="kpi-value">${orders.length}</div></div>`;
+  const colors=['linear-gradient(135deg,#1a0035,#4a0080)','linear-gradient(135deg,#001a32,#004080)','linear-gradient(135deg,#001800,#005000)','linear-gradient(135deg,#1e0800,#602000)','linear-gradient(135deg,#1a0038,#5000a0)','linear-gradient(135deg,#1c1c00,#505000)'];
+  const prods=document.getElementById('productGrid');
+  prods.innerHTML=books.map((b,i)=>{
+    const sales=orders.filter(o=>o.bookId===b.id).length;
+    const rev=orders.filter(o=>o.bookId===b.id).reduce((s,o)=>s+parseFloat(o.price||0),0);
+    const active=b.active!==false;
+    return`<div class="product-card">
+      <div class="pc-cover" style="background:${colors[i]};">
+        <span>${b.emoji}</span>
+        <div class="pc-active-dot ${active?'':'pc-inactive-dot'}"></div>
+      </div>
+      <div class="pc-body">
+        <div class="pc-title">${b.fullTitle}</div>
+        <div class="pc-price-row">
+          <span class="pc-price">${fmt$(b.price)}</span>
+          <span class="pc-member">💎 ${fmt$(b.memberPrice)}</span>
+        </div>
+        <div class="pc-stats">
+          <div class="pc-stat">Sales: <span>${sales}</span></div>
+          <div class="pc-stat">Revenue: <span>${fmt$(rev)}</span></div>
+          <div class="pc-stat">Status: <span style="color:${active?'var(--green)':'#ff5555'}">${active?'Active':'Hidden'}</span></div>
+        </div>
+        <div class="pc-actions">
+          <button class="act-btn ab-primary" style="font-size:.72rem;padding:6px 12px;" onclick="openEditProduct(${b.id})">✏️ Edit</button>
+          <button class="pc-toggle ${active?'pc-on':'pc-off'}" onclick="toggleProduct(${b.id})">${active?'● Active':'● Hidden'}</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+function openEditProduct(id){
+  const book=getBooks().find(b=>b.id===id);if(!book)return;
+  document.getElementById('editBookId').value=id;
+  document.getElementById('editTitle').value=book.fullTitle;
+  document.getElementById('editPrice').value=book.price;
+  document.getElementById('editMemberPrice').value=book.memberPrice;
+  document.getElementById('editDesc').value=book.desc||'';
+  document.getElementById('editProductModal').classList.add('show');
+}
+function saveProductEdit(){
+  const id=parseInt(document.getElementById('editBookId').value);
+  const books=getBooks();
+  const book=books.find(b=>b.id===id);if(!book)return;
+  book.fullTitle=document.getElementById('editTitle').value.trim()||book.fullTitle;
+  book.price=parseFloat(document.getElementById('editPrice').value)||book.price;
+  book.memberPrice=parseFloat(document.getElementById('editMemberPrice').value)||book.memberPrice;
+  book.desc=document.getElementById('editDesc').value.trim();
+  saveBooks(books);
+  closeModal('editProductModal');
+  buildProductsPage();
+  showToast('✅ Product updated!');
+}
+function toggleProduct(id){
+  const books=getBooks();
+  const book=books.find(b=>b.id===id);if(!book)return;
+  book.active=!book.active===false?true:!(book.active!==false);
+  book.active=book.active===false?true:false; // toggle
+  // Simpler toggle:
+  book.active=book.active===false?true:false;
+  saveBooks(books);buildProductsPage();
+  showToast(`Product ${book.active===false?'hidden':'set active'}.`);
+}
+
+// ════════════════════════════════════════════
+//  COUPONS PAGE
+// ════════════════════════════════════════════
+function buildCouponsPage(){
+  const coupons=getCoupons();
+  const orders=getOrders();
+  const totalUses=coupons.reduce((s,c)=>s+c.uses,0);
+  const totalDisc=coupons.reduce((s,c)=>s+c.revenue,0);
+  document.getElementById('couponsKpiGrid').innerHTML=`
+    <div class="kpi"><div class="kpi-icon">🏷️</div><div class="kpi-label">Active Coupons</div><div class="kpi-value">${coupons.length}</div></div>
+    <div class="kpi"><div class="kpi-icon">🔢</div><div class="kpi-label">Total Uses</div><div class="kpi-value">${totalUses}</div></div>
+    <div class="kpi"><div class="kpi-icon">💸</div><div class="kpi-label">Total Discounts Given</div><div class="kpi-value">${fmt$(totalDisc)}</div></div>
+    <div class="kpi"><div class="kpi-icon">📊</div><div class="kpi-label">Most Used</div><div class="kpi-value" style="font-size:1rem;">${coupons.sort((a,b)=>b.uses-a.uses)[0]?.code||'—'}</div></div>`;
+  // Coupon cards
+  document.getElementById('couponCards').innerHTML=coupons.map(c=>`
+    <div class="coupon-card">
+      <button class="cc-del" onclick="deleteCoupon('${c.code}')">✕</button>
+      <div class="cc-code">${c.code}</div>
+      <div class="cc-desc">${c.desc} — ${c.type==='pct'?c.value+'% off':'$'+c.value+' off'}</div>
+      <div class="cc-stats">
+        <div>Uses: <span class="cc-stat-val">${c.uses}</span></div>
+        <div>Revenue: <span class="cc-stat-val">${fmt$(c.revenue)}</span></div>
+      </div>
+      ${c.max>0?`<div class="fz-xs op4 mt8">${c.uses}/${c.max} uses</div>`:'<div class="fz-xs op4 mt8">Unlimited</div>'}
+    </div>`).join('');
+  // Usage chart
+  makeChart('chartCoupons',{type:'bar',data:{labels:coupons.map(c=>c.code),datasets:[{label:'Uses',data:coupons.map(c=>c.uses),backgroundColor:'rgba(255,255,0,.5)',borderColor:var_purple,borderRadius:6},{label:'Revenue ($)',data:coupons.map(c=>c.revenue),backgroundColor:'rgba(57,255,20,.4)',borderColor:'rgba(57,255,20,.8)',borderRadius:6}]},options:{...chartDefaults,maintainAspectRatio:false}});
+  // Usage log (sim)
+  const logRows=coupons.flatMap(c=>Array.from({length:Math.min(c.uses,3)},(_,i)=>({code:c.code,customer:`user${i+1}@example.com`,discount:c.type==='pct'?`${c.value}%`:`$${c.value}`,date:new Date(Date.now()-(i+1)*86400000*3).toISOString(),type:c.type==='pct'?'Percentage':'Fixed'})));
+  const logTbl=document.getElementById('couponLogTable');
+  logTbl.innerHTML=logRows.length?`<thead><tr><th>Code</th><th>Customer</th><th>Discount</th><th>Type</th><th>Date</th></tr></thead><tbody>${logRows.map(r=>`<tr><td class="text-yellow fw9 fz-sm" style="font-family:monospace;">${r.code}</td><td class="fz-xs op4">${r.customer}</td><td class="text-green fw9">${r.discount}</td><td><span class="badge b-yellow">${r.type}</span></td><td class="fz-xs op4">${fmtDate(r.date)}</td></tr>`).join('')}</tbody>`
+  :'<tr><td colspan="5"><div class="empty-state"><div class="empty-icon">🏷️</div><p>No coupon usage recorded yet.</p></div></td></tr>';
+}
+function createCoupon(){
+  const code=(document.getElementById('newCode').value.trim()).toUpperCase();
+  const type=document.getElementById('newType').value;
+  const value=parseFloat(document.getElementById('newValue').value);
+  const desc=document.getElementById('newDesc').value.trim()||'Custom coupon';
+  const max=parseInt(document.getElementById('newMax').value)||0;
+  if(!code||!value){showToast('Enter a code and value.','r');return;}
+  const coupons=getCoupons();
+  if(coupons.find(c=>c.code===code)){showToast('Code already exists!','r');return;}
+  coupons.push({code,type,value,desc,max,uses:0,revenue:0,created:new Date().toISOString()});
+  saveCoupons(coupons);
+  document.getElementById('newCode').value='';document.getElementById('newValue').value='';document.getElementById('newDesc').value='';
+  buildCouponsPage();showToast(`✅ Coupon "${code}" created!`);
+}
+function deleteCoupon(code){if(!confirm(`Delete coupon ${code}?`))return;saveCoupons(getCoupons().filter(c=>c.code!==code));buildCouponsPage();showToast(`🗑 Coupon ${code} deleted.`,'r');}
+
+// ════════════════════════════════════════════
+//  LIBRARY PAGE
+// ════════════════════════════════════════════
+function buildLibraryPage(){renderLibrary();}
+function handleLibDrop(e){e.preventDefault();document.getElementById('libDropZone').style.borderColor='rgba(0,255,255,.25)';handleLibFiles(e.dataTransfer.files);}
+function handleLibFiles(files){
+  const lib=getLibrary();let added=0;
+  Array.from(files).forEach(file=>{
+    if(file.size>10*1024*1024){showToast(`${file.name} too large (max 10MB).`,'r');return;}
+    const reader=new FileReader();
+    reader.onload=e=>{
+      const title=document.querySelector('#libFileInp').dataset.title||file.name.replace(/\.[^.]+$/,'');
+      lib.push({id:'LIB-'+Date.now()+'-'+Math.random().toString(36).substr(2,4),title,fileName:file.name,fileSize:(file.size/1024).toFixed(1)+'KB',format:file.name.endsWith('.pdf')?'PDF':'TXT',fileData:e.target.result,addedDate:new Date().toISOString(),notes:''});
+      added++;
+      try{saveLibrary(lib);document.getElementById('libUploadStatus').textContent=`✅ ${added} file${added>1?'s':''} uploaded!`;renderLibrary();}
+      catch(err){showToast('Storage full — file too large for local storage.','r');}
+    };
+    reader.readAsDataURL(file);
+  });
+}
+function renderLibrary(){
+  let lib=getLibrary();
+  const search=(document.getElementById('libSearch')?.value||'').toLowerCase();
+  if(search) lib=lib.filter(e=>(e.title||'').toLowerCase().includes(search)||(e.fileName||'').toLowerCase().includes(search));
+  const tbl=document.getElementById('libraryTable');
+  if(!lib.length){tbl.innerHTML='<tr><td colspan="6"><div class="empty-state"><div class="empty-icon">📭</div><p>Library is empty. Upload eBook files above.</p></div></td></tr>';return;}
+  tbl.innerHTML=`<thead><tr><th>Title</th><th>File</th><th>Format</th><th>Size</th><th>Added</th><th>Actions</th></tr></thead><tbody>${lib.map(e=>`<tr>
+    <td class="fw9 fz-sm">${e.title||e.fileName}</td>
+    <td class="fz-xs op4">${e.fileName||'—'}</td>
+    <td><span class="badge ${e.format==='PDF'?'b-pink':'b-cyan'}">${e.format||'—'}</span></td>
+    <td class="fz-xs op4">${e.fileSize||'—'}</td>
+    <td class="fz-xs op4">${fmtDate(e.addedDate)}</td>
+    <td style="white-space:nowrap;">
+      ${e.fileData?`<a class="act-btn ab-copy" style="font-size:.72rem;padding:5px 10px;text-decoration:none;display:inline-block;" href="${e.fileData}" download="${e.fileName||e.title}">⬇ Download</a>`:'<span class="fz-xs op4">No file</span>'}
+      <button class="act-btn ab-del" style="font-size:.7rem;padding:5px 8px;" onclick="deleteLibEntry('${e.id}')">🗑</button>
+    </td></tr>`).join('')}</tbody>`;
+}
+function deleteLibEntry(id){if(!confirm('Remove from library?'))return;saveLibrary(getLibrary().filter(e=>e.id!==id));renderLibrary();showToast('🗑 File removed.','r');}
+
+// ════════════════════════════════════════════
+//  REPORTS PAGE
+// ════════════════════════════════════════════
+function buildReportsPage(){buildPreview();}
+function buildPreview(){
+  const type=document.getElementById('previewSelect')?.value||'orders';
+  const orders=getOrders();const members=getMembers();const books=getBooks();
+  let html='';
+  if(type==='orders'){
+    document.getElementById('reportPreviewLabel').textContent=`(${orders.length} rows)`;
+    html=`<table class="tbl"><thead><tr><th>Order ID</th><th>Date</th><th>Name</th><th>Email</th><th>eBook</th><th>Format</th><th>Price</th><th>Member</th><th>Status</th></tr></thead><tbody>${orders.slice(-20).reverse().map(o=>`<tr><td class="fz-xs text-cyan" style="font-family:monospace">${o.id}</td><td class="fz-xs op4">${fmtDate(o.date)}</td><td class="fz-sm fw9">${o.customerName||'—'}</td><td class="fz-xs op4">${o.customerEmail}</td><td class="fz-xs">${(o.book||'').split(':')[0]}</td><td><span class="badge b-cyan">${o.format}</span></td><td class="text-green fw9">${fmt$(o.price)}</td><td>${o.member?'💎':'—'}</td><td><span class="badge ${o.status==='Fulfilled'?'b-green':'b-orange'}">${o.status}</span></td></tr>`).join('')}</tbody></table>`;
+  } else if(type==='members'){
+    document.getElementById('reportPreviewLabel').textContent=`(${members.length} rows)`;
+    html=`<table class="tbl"><thead><tr><th>Name</th><th>Email</th><th>Joined</th><th>Goal</th><th>Newsletter</th><th>Orders</th><th>Spent</th></tr></thead><tbody>${members.map(m=>{const mOrds=orders.filter(o=>o.customerEmail===m.email);return`<tr><td class="fw9 fz-sm">${m.name||'—'}</td><td class="fz-xs op4">${m.email}</td><td class="fz-xs op4">${fmtDate(m.joined)}</td><td class="fz-xs" style="max-width:120px">${(m.goal||'—').split('(')[0].trim()}</td><td>${m.newsletter!==false?'<span class="badge b-green">✅</span>':'<span class="badge b-red">❌</span>'}</td><td class="text-cyan fw9">${mOrds.length}</td><td class="text-green fw9">${fmt$(mOrds.reduce((s,o)=>s+parseFloat(o.price||0),0))}</td></tr>`;}).join('')}</tbody></table>`;
+  } else if(type==='revenue'){
+    const days=Array.from({length:14},(_,i)=>new Date(Date.now()-(13-i)*86400000));
+    document.getElementById('reportPreviewLabel').textContent='(Last 14 days)';
+    html=`<table class="tbl"><thead><tr><th>Date</th><th>Orders</th><th>Revenue</th><th>Member Revenue</th><th>Non-Member Revenue</th></tr></thead><tbody>${days.map(d=>{const label=d.toLocaleDateString('en-US',{month:'short',day:'numeric'});const dayOrds=orders.filter(o=>new Date(o.date).toLocaleDateString('en-US',{month:'short',day:'numeric'})===label);const rev=dayOrds.reduce((s,o)=>s+parseFloat(o.price||0),0);const mRev=dayOrds.filter(o=>o.member).reduce((s,o)=>s+parseFloat(o.price||0),0);return`<tr><td class="fz-sm fw9">${label}</td><td class="text-cyan">${dayOrds.length}</td><td class="text-green fw9">${fmt$(rev)}</td><td class="text-green">${fmt$(mRev)}</td><td class="op4">${fmt$(rev-mRev)}</td></tr>`;}).join('')}</tbody></table>`;
+  } else if(type==='products'){
+    document.getElementById('reportPreviewLabel').textContent='(All products)';
+    html=`<table class="tbl"><thead><tr><th>eBook</th><th>Sales</th><th>Revenue</th><th>Member Sales</th><th>Avg Price</th><th>Status</th></tr></thead><tbody>${books.map(b=>{const bOrds=orders.filter(o=>o.bookId===b.id);const rev=bOrds.reduce((s,o)=>s+parseFloat(o.price||0),0);const mSales=bOrds.filter(o=>o.member).length;return`<tr><td class="fw9">${b.emoji} ${b.title.split(':')[0]}</td><td class="text-cyan fw9">${bOrds.length}</td><td class="text-green fw9">${fmt$(rev)}</td><td>${mSales} <span class="fz-xs op4">(${Math.round(mSales/Math.max(bOrds.length,1)*100)}%)</span></td><td class="op4">${fmt$(bOrds.length?rev/bOrds.length:0)}</td><td><span class="badge ${b.active===false?'b-red':'b-green'}">${b.active===false?'Hidden':'Active'}</span></td></tr>`;}).join('')}</tbody></table>`;
+  }
+  document.getElementById('reportPreviewWrap').innerHTML=html;
+}
+
+// ════════════════════════════════════════════
+//  EXPORTS
+// ════════════════════════════════════════════
+function exportOrders(){
+  const orders=getOrders();
+  downloadCSV('aistore_orders.csv',[
+    ['Order ID','Date','Name','Email','eBook','Format','Price','Member','Status'],
+    ...orders.map(o=>[o.id,fmtDT(o.date),o.customerName,o.customerEmail,o.book,o.format,o.price,o.member?'Yes':'No',o.status])
+  ]);
+}
+function exportMembers(){
+  const members=getMembers();const orders=getOrders();
+  downloadCSV('aistore_members.csv',[
+    ['Name','Email','Joined','Goal','Interests','Newsletter','Orders','Total Spent'],
+    ...members.map(m=>{const mOrds=orders.filter(o=>o.customerEmail===m.email);return[m.name,m.email,fmtDT(m.joined),m.goal,(m.interests||[]).join(';'),m.newsletter!==false?'Yes':'No',mOrds.length,mOrds.reduce((s,o)=>s+parseFloat(o.price||0),0).toFixed(2)];})
+  ]);
+}
+function exportRevenue(){
+  const orders=getOrders();
+  const days=Array.from({length:30},(_,i)=>new Date(Date.now()-(29-i)*86400000));
+  downloadCSV('aistore_revenue.csv',[
+    ['Date','Orders','Total Revenue','Member Revenue','Non-Member Revenue'],
+    ...days.map(d=>{const label=d.toLocaleDateString('en-US',{month:'short',day:'numeric'});const dayOrds=orders.filter(o=>new Date(o.date).toLocaleDateString('en-US',{month:'short',day:'numeric'})===label);const rev=dayOrds.reduce((s,o)=>s+parseFloat(o.price||0),0);const mRev=dayOrds.filter(o=>o.member).reduce((s,o)=>s+parseFloat(o.price||0),0);return[label,dayOrds.length,rev.toFixed(2),mRev.toFixed(2),(rev-mRev).toFixed(2)];})
+  ]);
+}
+function exportCoupons(){
+  const coupons=getCoupons();
+  downloadCSV('aistore_coupons.csv',[
+    ['Code','Type','Value','Description','Uses','Revenue Generated','Max Uses','Created'],
+    ...coupons.map(c=>[c.code,c.type,c.value,c.desc,c.uses,c.revenue,c.max||'Unlimited',fmtDate(c.created)])
+  ]);
+}
+function exportProducts(){
+  const books=getBooks();const orders=getOrders();
+  downloadCSV('aistore_products.csv',[
+    ['ID','Title','Regular Price','Member Price','Sales','Revenue','Status'],
+    ...books.map(b=>{const bOrds=orders.filter(o=>o.bookId===b.id);return[b.id,b.fullTitle,b.price,b.memberPrice,bOrds.length,bOrds.reduce((s,o)=>s+parseFloat(o.price||0),0).toFixed(2),b.active===false?'Hidden':'Active'];})
+  ]);
+}
+function exportAll(){
+  const data={orders:getOrders(),members:getMembers(),library:getLibrary(),coupons:getCoupons(),books:getBooks(),exportedAt:new Date().toISOString()};
+  const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+  const a=Object.assign(document.createElement('a'),{href:URL.createObjectURL(blob),download:'aistore_full_backup.json'});
+  a.click();showToast('📦 Full data backup downloaded!','c');
+}
+
+/ ════════════════════════════════════════════
+//  PRODUCT TOGGLE FIX
+// ════════════════════════════════════════════
+function toggleProduct(id){
+  const books=getBooks();
+  const book=books.find(b=>b.id===id);if(!book)return;
+  book.active=book.active===false?true:false;
+  saveBooks(books);buildProductsPage();
+  showToast(`Product "${book.title.split(':')[0]}" ${book.active===false?'hidden':'activated'}.`);
+}
+
+window.onload=function(){
+  document.getElementById('lUser').focus();
+}; 
+
+</script>
+</body>
+</html>
