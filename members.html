@@ -1,0 +1,819 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Money Machine — Members Portal</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{--pink:#ff00ff;--cyan:#00ffff;--green:#39ff14;--orange:#ff6600;--yellow:#ffff00;--purple:#bf00ff;--dark:#050008;}
+body{background:var(--dark);color:#fff;font-family:'Segoe UI',system-ui,sans-serif;overflow-x:hidden;min-height:100vh;}
+body::before{content:'';position:fixed;top:0;left:0;width:100%;height:100%;
+  background-image:linear-gradient(rgba(57,255,20,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(57,255,20,0.04) 1px,transparent 1px);
+  background-size:40px 40px;animation:gs 12s linear infinite;z-index:0;pointer-events:none;}
+body::after{content:'';position:fixed;top:0;left:0;width:100%;height:100%;
+  background:radial-gradient(ellipse at 20% 30%,rgba(57,255,20,0.12) 0%,transparent 50%),
+             radial-gradient(ellipse at 80% 70%,rgba(191,0,255,0.15) 0%,transparent 50%),
+             radial-gradient(ellipse at 50% 10%,rgba(255,0,255,0.1) 0%,transparent 40%);
+  z-index:0;pointer-events:none;}
+@keyframes gs{0%{background-position:0 0,0 0;}100%{background-position:40px 40px,40px 40px;}}
+
+/* NAV */
+nav{background:rgba(5,0,8,.95);border-bottom:1px solid rgba(57,255,20,.25);padding:14px 20px;position:sticky;top:0;z-index:100;backdrop-filter:blur(14px);}
+.nav-inner{max-width:1000px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;}
+.back-btn{color:var(--cyan);text-decoration:none;font-weight:700;font-size:.88rem;letter-spacing:1px;transition:all .3s;}
+.back-btn:hover{text-shadow:0 0 10px var(--cyan);}
+.nav-logo{font-size:1rem;font-weight:900;background:linear-gradient(90deg,var(--green),var(--cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.cart-link{padding:6px 14px;background:rgba(255,0,255,.15);border:1px solid rgba(255,0,255,.4);color:var(--pink);border-radius:20px;font-size:.75rem;font-weight:800;text-decoration:none;letter-spacing:1px;transition:all .3s;}
+.cart-link:hover{background:rgba(255,0,255,.25);}
+
+/* LAYOUT */
+.wrap{max-width:1000px;margin:0 auto;padding:36px 18px;position:relative;z-index:1;}
+
+/* SIGNUP / LOGIN SCREENS */
+.auth-section{display:none;}
+.auth-section.active{display:block;}
+
+/* HERO */
+.auth-hero{text-align:center;padding:20px 0 36px;}
+.auth-hero-icon{font-size:5rem;display:block;margin-bottom:16px;animation:float 3s ease-in-out infinite;filter:drop-shadow(0 0 20px rgba(57,255,20,.6));}
+@keyframes float{0%,100%{transform:translateY(0);}50%{transform:translateY(-12px);}}
+.auth-title{font-size:clamp(1.8rem,5vw,3rem);font-weight:900;background:linear-gradient(90deg,var(--green),var(--cyan),var(--yellow));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:10px;line-height:1.1;}
+.auth-sub{color:rgba(255,255,255,.55);font-size:.92rem;max-width:500px;margin:0 auto;}
+
+/* BENEFITS GRID */
+.benefits-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px;margin:28px 0;}
+.benefit-card{background:rgba(57,255,20,.07);border:1px solid rgba(57,255,20,.2);border-radius:12px;padding:16px;text-align:center;transition:all .3s;}
+.benefit-card:hover{border-color:var(--green);box-shadow:0 0 15px rgba(57,255,20,.2);transform:translateY(-3px);}
+.benefit-icon{font-size:2rem;margin-bottom:8px;display:block;}
+.benefit-title{font-size:.85rem;font-weight:800;color:var(--green);margin-bottom:4px;}
+.benefit-text{font-size:.75rem;color:rgba(255,255,255,.5);line-height:1.5;}
+
+/* AUTH CARD */
+.auth-card{background:rgba(10,0,22,.88);border:2px solid rgba(57,255,20,.35);border-radius:18px;padding:36px;max-width:480px;margin:0 auto;box-shadow:0 0 40px rgba(57,255,20,.15);backdrop-filter:blur(12px);}
+.auth-card-title{font-size:1.3rem;font-weight:900;color:var(--green);text-shadow:0 0 10px var(--green);margin-bottom:22px;text-align:center;text-transform:uppercase;letter-spacing:2px;}
+.auth-tabs{display:flex;border-bottom:1px solid rgba(255,255,255,.1);margin-bottom:24px;}
+.auth-tab{flex:1;padding:10px;text-align:center;cursor:pointer;font-size:.85rem;font-weight:700;color:rgba(255,255,255,.4);transition:all .3s;border-bottom:2px solid transparent;}
+.auth-tab.active{color:var(--green);border-bottom-color:var(--green);text-shadow:0 0 8px var(--green);}
+.auth-form{display:none;}
+.auth-form.active{display:block;}
+.form-group{margin-bottom:14px;}
+.form-label{display:block;font-size:.73rem;font-weight:700;color:rgba(255,255,255,.45);text-transform:uppercase;letter-spacing:1px;margin-bottom:5px;}
+.form-inp{width:100%;padding:12px 14px;background:rgba(0,0,0,.5);border:1px solid rgba(57,255,20,.25);border-radius:10px;color:#fff;font-size:.9rem;outline:none;transition:all .3s;}
+.form-inp:focus{border-color:var(--green);box-shadow:0 0 10px rgba(57,255,20,.2);}
+.form-inp::placeholder{color:rgba(255,255,255,.28);}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+@media(max-width:480px){.form-row{grid-template-columns:1fr;}}
+.auth-btn{width:100%;padding:14px;background:linear-gradient(135deg,var(--green),#00aa00,#39ff14);color:#000;border:none;border-radius:10px;font-size:.95rem;font-weight:900;letter-spacing:2px;text-transform:uppercase;cursor:pointer;transition:all .3s;margin-top:4px;}
+.auth-btn:hover{box-shadow:0 6px 25px rgba(57,255,20,.5);transform:translateY(-2px);}
+.form-err{color:#ff4444;font-size:.78rem;margin-top:6px;text-align:center;min-height:18px;}
+.form-hint{font-size:.75rem;color:rgba(255,255,255,.35);text-align:center;margin-top:12px;line-height:1.5;}
+.form-hint a{color:var(--cyan);text-decoration:none;cursor:pointer;}
+
+/* INTERESTS */
+.interests-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px;margin-bottom:14px;}
+.interest-option{cursor:pointer;}
+.interest-option input{display:none;}
+.interest-label{display:block;padding:8px 10px;border:1px solid rgba(255,255,255,.15);border-radius:8px;text-align:center;font-size:.75rem;color:rgba(255,255,255,.5);transition:all .3s;background:rgba(0,0,0,.3);}
+.interest-option input:checked + .interest-label{border-color:var(--green);color:var(--green);background:rgba(57,255,20,.1);text-shadow:0 0 6px var(--green);}
+.interest-icon{display:block;font-size:1.3rem;margin-bottom:3px;}
+
+/* DASHBOARD */
+.dashboard{display:none;}
+.member-header{background:linear-gradient(135deg,rgba(57,255,20,.12),rgba(0,200,100,.08));border:2px solid rgba(57,255,20,.3);border-radius:18px;padding:28px;margin-bottom:24px;display:flex;gap:20px;align-items:center;flex-wrap:wrap;}
+.member-avatar{width:70px;height:70px;border-radius:50%;background:linear-gradient(135deg,var(--green),var(--cyan));display:flex;align-items:center;justify-content:center;font-size:2.2rem;flex-shrink:0;border:3px solid var(--green);box-shadow:0 0 20px rgba(57,255,20,.4);}
+.member-info{flex:1;}
+.member-greeting{font-size:.8rem;color:rgba(255,255,255,.45);letter-spacing:2px;text-transform:uppercase;margin-bottom:4px;}
+.member-name{font-size:1.6rem;font-weight:900;color:#fff;margin-bottom:4px;}
+.member-email{font-size:.82rem;color:rgba(255,255,255,.45);}
+.member-badge-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;}
+.m-badge{padding:4px 12px;border-radius:12px;font-size:.68rem;font-weight:800;text-transform:uppercase;letter-spacing:.5px;}
+.mb-green{background:rgba(57,255,20,.2);border:1px solid var(--green);color:var(--green);}
+.mb-cyan{background:rgba(0,255,255,.2);border:1px solid var(--cyan);color:var(--cyan);}
+.mb-pink{background:rgba(255,0,255,.2);border:1px solid var(--pink);color:var(--pink);}
+.header-actions{display:flex;flex-direction:column;gap:8px;align-items:flex-end;flex-shrink:0;}
+@media(max-width:600px){.header-actions{flex-direction:row;flex-wrap:wrap;}}
+.action-btn{padding:8px 18px;border-radius:8px;font-size:.8rem;font-weight:800;cursor:pointer;letter-spacing:1px;text-decoration:none;display:inline-block;text-align:center;transition:all .3s;}
+.ab-shop{background:linear-gradient(135deg,var(--pink),var(--purple));color:#fff;border:none;}
+.ab-shop:hover{box-shadow:0 0 15px rgba(255,0,255,.4);}
+.ab-logout{background:rgba(255,50,50,.12);border:1px solid rgba(255,50,50,.35);color:#ff5555;}
+.ab-logout:hover{background:rgba(255,50,50,.22);}
+
+/* STATS */
+.stats-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:14px;margin-bottom:24px;}
+.stat-box{background:rgba(10,0,22,.8);border:1px solid;border-radius:12px;padding:18px;text-align:center;transition:transform .3s;}
+.stat-box:hover{transform:translateY(-4px);}
+.stat-box:nth-child(1){border-color:rgba(0,255,255,.35);box-shadow:0 0 12px rgba(0,255,255,.1);}
+.stat-box:nth-child(2){border-color:rgba(57,255,20,.35);box-shadow:0 0 12px rgba(57,255,20,.1);}
+.stat-box:nth-child(3){border-color:rgba(255,0,255,.35);box-shadow:0 0 12px rgba(255,0,255,.1);}
+.stat-box:nth-child(4){border-color:rgba(255,165,0,.35);box-shadow:0 0 12px rgba(255,165,0,.1);}
+.stat-icon{font-size:1.8rem;margin-bottom:6px;}
+.stat-val{font-size:1.8rem;font-weight:900;margin-bottom:2px;}
+.stat-box:nth-child(1) .stat-val{color:var(--cyan);text-shadow:0 0 8px var(--cyan);}
+.stat-box:nth-child(2) .stat-val{color:var(--green);text-shadow:0 0 8px var(--green);}
+.stat-box:nth-child(3) .stat-val{color:var(--pink);text-shadow:0 0 8px var(--pink);}
+.stat-box:nth-child(4) .stat-val{color:#ffa500;text-shadow:0 0 8px #ffa500;}
+.stat-lbl{font-size:.7rem;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:1px;}
+
+/* TABS */
+.dash-tabs{display:flex;gap:0;border-bottom:2px solid rgba(255,255,255,.08);margin-bottom:22px;overflow-x:auto;}
+.dash-tab{padding:12px 20px;cursor:pointer;font-size:.85rem;font-weight:700;color:rgba(255,255,255,.4);transition:all .3s;border-bottom:3px solid transparent;white-space:nowrap;margin-bottom:-2px;}
+.dash-tab:hover{color:rgba(255,255,255,.7);}
+.dash-tab.active{color:var(--cyan);border-bottom-color:var(--cyan);}
+
+.dash-panel{display:none;}
+.dash-panel.active{display:block;}
+
+/* SECTION CARDS */
+.sec-card{background:rgba(10,0,22,.8);border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:22px;margin-bottom:18px;backdrop-filter:blur(8px);}
+.sec-title{font-size:.92rem;font-weight:800;color:var(--cyan);text-shadow:0 0 8px var(--cyan);margin-bottom:16px;text-transform:uppercase;letter-spacing:2px;border-bottom:1px solid rgba(0,255,255,.15);padding-bottom:10px;}
+
+/* ORDER HISTORY */
+.order-hist-item{background:rgba(0,0,0,.4);border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:16px;margin-bottom:12px;transition:all .3s;}
+.order-hist-item:hover{border-color:rgba(0,255,255,.25);}
+.oh-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;flex-wrap:wrap;gap:8px;}
+.oh-id{font-size:.72rem;color:var(--cyan);font-family:monospace;}
+.oh-date{font-size:.72rem;color:rgba(255,255,255,.4);}
+.oh-total{font-size:1rem;font-weight:900;color:var(--green);text-shadow:0 0 6px var(--green);}
+.oh-items{}
+.oh-book{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.05);}
+.oh-book:last-child{border-bottom:none;}
+.oh-book-icon{font-size:1.2rem;}
+.oh-book-title{font-size:.8rem;color:rgba(255,255,255,.75);flex:1;}
+.oh-book-fmt{font-size:.68rem;padding:2px 8px;background:rgba(0,255,255,.1);border:1px solid rgba(0,255,255,.25);border-radius:8px;color:var(--cyan);}
+.oh-status{font-size:.68rem;padding:2px 8px;border-radius:8px;font-weight:800;}
+.s-pending{background:rgba(255,165,0,.15);color:#ffa500;border:1px solid rgba(255,165,0,.3);}
+.s-fulfilled{background:rgba(57,255,20,.15);color:var(--green);border:1px solid rgba(57,255,20,.3);}
+.empty-hist{text-align:center;padding:40px;color:rgba(255,255,255,.35);}
+
+/* PROFILE EDIT */
+.profile-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+@media(max-width:600px){.profile-grid{grid-template-columns:1fr;}}
+.profile-inp{width:100%;padding:11px 13px;background:rgba(0,0,0,.5);border:1px solid rgba(255,255,255,.15);border-radius:9px;color:#fff;font-size:.88rem;outline:none;transition:border-color .3s;}
+.profile-inp:focus{border-color:var(--cyan);}
+.profile-inp::placeholder{color:rgba(255,255,255,.3);}
+.profile-lbl{display:block;font-size:.72rem;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;}
+.save-profile-btn{padding:11px 26px;background:linear-gradient(135deg,var(--cyan),#0055ff);color:#000;border:none;border-radius:9px;font-size:.88rem;font-weight:900;cursor:pointer;letter-spacing:1px;text-transform:uppercase;margin-top:12px;transition:all .3s;}
+.save-profile-btn:hover{box-shadow:0 0 18px rgba(0,255,255,.4);}
+
+/* PERKS */
+.perks-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px;}
+.perk-card{background:rgba(0,0,0,.35);border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:16px;text-align:center;transition:all .3s;}
+.perk-card:hover{border-color:rgba(255,0,255,.3);box-shadow:0 0 12px rgba(255,0,255,.1);}
+.perk-icon{font-size:2.2rem;margin-bottom:10px;display:block;}
+.perk-title{font-size:.85rem;font-weight:800;color:#fff;margin-bottom:4px;}
+.perk-text{font-size:.75rem;color:rgba(255,255,255,.45);line-height:1.5;}
+.perk-action{display:inline-block;margin-top:10px;padding:6px 14px;background:rgba(255,0,255,.12);border:1px solid rgba(255,0,255,.3);color:var(--pink);border-radius:8px;font-size:.72rem;font-weight:700;text-decoration:none;cursor:pointer;transition:all .3s;}
+.perk-action:hover{background:rgba(255,0,255,.22);}
+
+/* NEWSLETTER */
+.newsletter-card{background:linear-gradient(135deg,rgba(255,0,255,.1),rgba(191,0,255,.1));border:2px solid rgba(255,0,255,.3);border-radius:14px;padding:22px;text-align:center;}
+.nl-title{font-size:1.1rem;font-weight:900;color:var(--pink);text-shadow:0 0 10px var(--pink);margin-bottom:6px;}
+.nl-text{font-size:.82rem;color:rgba(255,255,255,.6);line-height:1.6;margin-bottom:16px;}
+.nl-toggle{display:flex;align-items:center;justify-content:center;gap:12px;margin-bottom:14px;}
+.toggle-switch{position:relative;width:52px;height:28px;cursor:pointer;}
+.toggle-switch input{display:none;}
+.toggle-slider{position:absolute;top:0;left:0;right:0;bottom:0;background:rgba(255,255,255,.15);border-radius:28px;transition:.4s;border:1px solid rgba(255,255,255,.2);}
+.toggle-slider::before{content:'';position:absolute;width:20px;height:20px;border-radius:50%;top:3px;left:3px;background:#fff;transition:.4s;}
+.toggle-switch input:checked + .toggle-slider{background:rgba(57,255,20,.4);border-color:var(--green);}
+.toggle-switch input:checked + .toggle-slider::before{transform:translateX(24px);background:var(--green);}
+.nl-label{font-size:.88rem;color:rgba(255,255,255,.7);font-weight:600;}
+
+/* COUPON DISPLAY */
+.coupon-display{background:linear-gradient(135deg,rgba(255,255,0,.1),rgba(255,102,0,.1));border:2px dashed rgba(255,255,0,.35);border-radius:12px;padding:18px;text-align:center;margin-bottom:12px;}
+.coupon-code{font-size:1.8rem;font-weight:900;color:var(--yellow);text-shadow:0 0 15px var(--yellow);letter-spacing:4px;font-family:monospace;}
+.coupon-desc{font-size:.78rem;color:rgba(255,255,255,.55);margin-top:6px;}
+.copy-coupon-btn{margin-top:10px;padding:6px 16px;background:rgba(255,255,0,.15);border:1px solid rgba(255,255,0,.35);color:var(--yellow);border-radius:8px;cursor:pointer;font-size:.78rem;font-weight:800;transition:all .3s;}
+.copy-coupon-btn:hover{background:rgba(255,255,0,.25);}
+
+/* TOAST */
+.toast{position:fixed;bottom:22px;right:22px;padding:12px 18px;border-radius:10px;font-size:.85rem;font-weight:700;z-index:9999;opacity:0;transform:translateY(8px);transition:all .35s;pointer-events:none;background:rgba(57,255,20,.2);border:1px solid var(--green);color:var(--green);}
+.toast.show{opacity:1;transform:translateY(0);}
+
+/* DIVIDER */
+.ndiv{height:1px;background:linear-gradient(90deg,transparent,rgba(57,255,20,.3),transparent);margin:18px 0;}
+
+/* REFERRAL */
+.ref-box{background:rgba(0,0,0,.4);border:1px solid rgba(191,0,255,.3);border-radius:12px;padding:18px;text-align:center;}
+.ref-link{font-size:.82rem;color:var(--purple);font-family:monospace;word-break:break-all;margin:10px 0;background:rgba(191,0,255,.1);padding:8px 12px;border-radius:8px;border:1px solid rgba(191,0,255,.2);}
+.ref-copy-btn{padding:7px 18px;background:rgba(191,0,255,.15);border:1px solid rgba(191,0,255,.4);color:var(--purple);border-radius:8px;cursor:pointer;font-size:.8rem;font-weight:800;transition:all .3s;}
+.ref-copy-btn:hover{background:rgba(191,0,255,.28);}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-inner">
+    <a href="store.html" class="back-btn">← Back to Store</a>
+    <span class="nav-logo">💎 MEMBERS PORTAL</span>
+    <a href="cart.html" class="cart-link">🛒 CART</a>
+  </div>
+</nav>
+
+<div class="wrap">
+
+  <!-- ===== SIGNUP / LOGIN VIEW ===== -->
+  <div class="auth-section active" id="authSection">
+    <div class="auth-hero">
+      <span class="auth-hero-icon">💎</span>
+      <div class="auth-title">JOIN THE AI MONEY ELITE</div>
+      <div class="auth-sub">Sign up free and unlock exclusive member prices, early access, bonus content, and more — instantly.</div>
+    </div>
+
+    <div class="benefits-grid">
+      <div class="benefit-card">
+        <span class="benefit-icon">💰</span>
+        <div class="benefit-title">Up to 40% OFF</div>
+        <div class="benefit-text">Exclusive member pricing on every eBook in the store</div>
+      </div>
+      <div class="benefit-card">
+        <span class="benefit-icon">⚡</span>
+        <div class="benefit-title">Early Access</div>
+        <div class="benefit-text">Be first in line for new eBook releases before the public</div>
+      </div>
+      <div class="benefit-card">
+        <span class="benefit-icon">🎁</span>
+        <div class="benefit-title">Bonus Content</div>
+        <div class="benefit-text">Members-only bonus chapters, checklists & templates</div>
+      </div>
+      <div class="benefit-card">
+        <span class="benefit-icon">🏷️</span>
+        <div class="benefit-title">Exclusive Coupons</div>
+        <div class="benefit-text">Special coupon codes delivered to your inbox monthly</div>
+      </div>
+      <div class="benefit-card">
+        <span class="benefit-icon">📰</span>
+        <div class="benefit-title">AI Money Newsletter</div>
+        <div class="benefit-text">Weekly AI monetization tips and strategies for free</div>
+      </div>
+      <div class="benefit-card">
+        <span class="benefit-icon">🌟</span>
+        <div class="benefit-title">Priority Support</div>
+        <div class="benefit-text">Jump the queue with priority customer support responses</div>
+      </div>
+    </div>
+
+    <div class="auth-card">
+      <div class="auth-tabs">
+        <div class="auth-tab active" onclick="switchTab('signup',this)">🚀 JOIN FREE</div>
+        <div class="auth-tab" onclick="switchTab('login',this)">🔑 MEMBER LOGIN</div>
+      </div>
+
+      <!-- SIGNUP FORM -->
+      <div class="auth-form active" id="signupForm">
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">First Name</label>
+            <input class="form-inp" type="text" id="sgFirstName" placeholder="Your first name">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Last Name</label>
+            <input class="form-inp" type="text" id="sgLastName" placeholder="Your last name">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Email Address</label>
+          <input class="form-inp" type="email" id="sgEmail" placeholder="your@email.com">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Your AI Income Goal</label>
+          <select class="form-inp" id="sgGoal">
+            <option value="">-- Select your goal --</option>
+            <option>Extra $500–$1,000/month side income</option>
+            <option>Replace my job income ($3,000–$6,000/month)</option>
+            <option>Build a 6-figure AI business ($10,000+/month)</option>
+            <option>Passive income through AI automation</option>
+            <option>Just exploring AI opportunities</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label" style="margin-bottom:8px;">AI Interests (select all that apply)</label>
+          <div class="interests-grid">
+            <label class="interest-option"><input type="checkbox" value="content"><div class="interest-label"><span class="interest-icon">✍️</span>Content Creation</div></label>
+            <label class="interest-option"><input type="checkbox" value="freelance"><div class="interest-label"><span class="interest-icon">💼</span>Freelancing</div></label>
+            <label class="interest-option"><input type="checkbox" value="automation"><div class="interest-label"><span class="interest-icon">🤖</span>Automation</div></label>
+            <label class="interest-option"><input type="checkbox" value="ecommerce"><div class="interest-label"><span class="interest-icon">🛒</span>E-commerce</div></label>
+            <label class="interest-option"><input type="checkbox" value="prompts"><div class="interest-label"><span class="interest-icon">⚡</span>Prompt Eng.</div></label>
+            <label class="interest-option"><input type="checkbox" value="passive"><div class="interest-label"><span class="interest-icon">💰</span>Passive Income</div></label>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">How did you hear about us?</label>
+          <select class="form-inp" id="sgSource">
+            <option value="">-- Select one --</option>
+            <option>Social Media</option><option>Google Search</option>
+            <option>Friend / Referral</option><option>YouTube</option>
+            <option>Other</option>
+          </select>
+        </div>
+        <label style="display:flex;gap:8px;cursor:pointer;margin-bottom:14px;align-items:flex-start;">
+          <input type="checkbox" id="sgAgree" style="margin-top:3px;accent-color:var(--green);flex-shrink:0;">
+          <span style="font-size:.75rem;color:rgba(255,255,255,.5);line-height:1.5;">I agree to receive emails about exclusive deals, new eBooks, and AI monetization tips. I can unsubscribe at any time. No spam — ever.</span>
+        </label>
+        <div class="form-err" id="sgErr"></div>
+        <button class="auth-btn" onclick="doSignup()">🎉 CREATE FREE ACCOUNT & UNLOCK DISCOUNTS</button>
+        <div class="form-hint">Already a member? <a onclick="switchTab('login',document.querySelectorAll('.auth-tab')[1])">Log in here →</a></div>
+      </div>
+
+      <!-- LOGIN FORM -->
+      <div class="auth-form" id="loginForm">
+        <div class="form-group">
+          <label class="form-label">Email Address</label>
+          <input class="form-inp" type="email" id="lgEmail" placeholder="your@email.com">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Your First Name (used as PIN)</label>
+          <input class="form-inp" type="text" id="lgName" placeholder="Enter your first name">
+        </div>
+        <div class="form-err" id="lgErr"></div>
+        <button class="auth-btn" onclick="doLogin()" style="background:linear-gradient(135deg,var(--cyan),#0066ff);">🔑 ACCESS MY ACCOUNT</button>
+        <div class="form-hint">New here? It's FREE! <a onclick="switchTab('signup',document.querySelectorAll('.auth-tab')[0])">Create an account →</a></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== DASHBOARD VIEW ===== -->
+  <div class="dashboard" id="dashboardSection">
+
+    <!-- MEMBER HEADER -->
+    <div class="member-header">
+      <div class="member-avatar" id="memberAvatar">👤</div>
+      <div class="member-info">
+        <div class="member-greeting">Welcome back</div>
+        <div class="member-name" id="dashName">Member</div>
+        <div class="member-email" id="dashEmail"></div>
+        <div class="member-badge-row">
+          <span class="m-badge mb-green">💎 FREE MEMBER</span>
+          <span class="m-badge mb-cyan" id="joinedBadge"></span>
+          <span class="m-badge mb-pink" id="orderCountBadge">0 Orders</span>
+        </div>
+      </div>
+      <div class="header-actions">
+        <a href="store.html" class="action-btn ab-shop">🛍️ Shop Now</a>
+        <button class="action-btn ab-logout" onclick="doLogout()">Logout</button>
+      </div>
+    </div>
+
+    <!-- STATS -->
+    <div class="stats-row">
+      <div class="stat-box"><div class="stat-icon">📦</div><div class="stat-val" id="statOrders">0</div><div class="stat-lbl">Orders</div></div>
+      <div class="stat-box"><div class="stat-icon">💰</div><div class="stat-val" id="statSpent">$0</div><div class="stat-lbl">Total Spent</div></div>
+      <div class="stat-box"><div class="stat-icon">🎁</div><div class="stat-val" id="statSaved">$0</div><div class="stat-lbl">Total Saved</div></div>
+      <div class="stat-box"><div class="stat-icon">📚</div><div class="stat-val" id="statBooks">0</div><div class="stat-lbl">eBooks Owned</div></div>
+    </div>
+
+    <!-- DASHBOARD TABS -->
+    <div class="dash-tabs">
+      <div class="dash-tab active" onclick="showDashTab('overview',this)">📊 Overview</div>
+      <div class="dash-tab" onclick="showDashTab('orders',this)">📋 My Orders</div>
+      <div class="dash-tab" onclick="showDashTab('perks',this)">🎁 My Perks</div>
+      <div class="dash-tab" onclick="showDashTab('profile',this)">👤 My Profile</div>
+      <div class="dash-tab" onclick="showDashTab('newsletter',this)">📰 Newsletter</div>
+    </div>
+
+    <!-- OVERVIEW TAB -->
+    <div class="dash-panel active" id="tab-overview">
+      <div class="sec-card">
+        <div class="sec-title">🔥 Your Exclusive Member Coupons</div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;margin-bottom:8px;">
+          <div class="coupon-display">
+            <div style="font-size:.72rem;color:rgba(255,255,255,.45);margin-bottom:6px;">MEMBER WELCOME CODE</div>
+            <div class="coupon-code">AIRICH10</div>
+            <div class="coupon-desc">10% off your next order</div>
+            <button class="copy-coupon-btn" onclick="copyCoupon('AIRICH10')">📋 COPY CODE</button>
+          </div>
+          <div class="coupon-display">
+            <div style="font-size:.72rem;color:rgba(255,255,255,.45);margin-bottom:6px;">BUNDLE DISCOUNT</div>
+            <div class="coupon-code">BUNDLE20</div>
+            <div class="coupon-desc">20% off when buying 2+ eBooks</div>
+            <button class="copy-coupon-btn" onclick="copyCoupon('BUNDLE20')">📋 COPY CODE</button>
+          </div>
+          <div class="coupon-display">
+            <div style="font-size:.72rem;color:rgba(255,255,255,.45);margin-bottom:6px;">LOYALTY REWARD</div>
+            <div class="coupon-code">WELCOME15</div>
+            <div class="coupon-desc">15% off — members exclusive</div>
+            <button class="copy-coupon-btn" onclick="copyCoupon('WELCOME15')">📋 COPY CODE</button>
+          </div>
+        </div>
+        <p style="font-size:.75rem;color:rgba(255,255,255,.3);">💡 Use these codes at checkout on the Cart page for extra savings on top of your member pricing!</p>
+      </div>
+
+      <div class="sec-card">
+        <div class="sec-title">📚 Recommended For You</div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;" id="recommendedBooks"></div>
+      </div>
+
+      <div class="sec-card">
+        <div class="sec-title">📣 Refer a Friend — Earn Rewards</div>
+        <div class="ref-box">
+          <p style="font-size:.85rem;color:rgba(255,255,255,.6);margin-bottom:10px;">Share your referral link and your friend gets 15% off their first purchase!</p>
+          <div class="ref-link" id="refLink"></div>
+          <button class="ref-copy-btn" onclick="copyRef()">📋 COPY REFERRAL LINK</button>
+          <p style="font-size:.72rem;color:rgba(255,255,255,.35);margin-top:8px;">Every successful referral earns you a bonus coupon code — delivered by email!</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ORDERS TAB -->
+    <div class="dash-panel" id="tab-orders">
+      <div class="sec-card">
+        <div class="sec-title">📋 My Order History</div>
+        <div id="orderHistoryList">
+          <div class="empty-hist">
+            <div style="font-size:3rem;margin-bottom:12px;">📭</div>
+            <p>No orders yet. Start shopping to see your purchases here!</p>
+            <a href="store.html" style="display:inline-block;margin-top:14px;padding:10px 24px;background:linear-gradient(135deg,var(--pink),var(--purple));color:#fff;text-decoration:none;border-radius:8px;font-weight:800;font-size:.85rem;">🛍️ BROWSE eBOOKS</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PERKS TAB -->
+    <div class="dash-panel" id="tab-perks">
+      <div class="sec-card">
+        <div class="sec-title">🎁 Your Member Perks</div>
+        <div class="perks-grid">
+          <div class="perk-card">
+            <span class="perk-icon">💰</span>
+            <div class="perk-title">Member Pricing</div>
+            <div class="perk-text">Up to 40% off every eBook automatically applied at checkout</div>
+            <a class="perk-action" href="store.html">Shop Now →</a>
+          </div>
+          <div class="perk-card">
+            <span class="perk-icon">🏷️</span>
+            <div class="perk-title">Exclusive Coupons</div>
+            <div class="perk-text">New coupon codes delivered every month — extra stacking savings</div>
+            <a class="perk-action" onclick="showDashTab('overview',document.querySelectorAll('.dash-tab')[0])">View Codes →</a>
+          </div>
+          <div class="perk-card">
+            <span class="perk-icon">📧</span>
+            <div class="perk-title">Priority Delivery</div>
+            <div class="perk-text">Members get their eBooks delivered within 12 hours (vs 24-48 standard)</div>
+            <a class="perk-action" href="store.html">Order Now →</a>
+          </div>
+          <div class="perk-card">
+            <span class="perk-icon">⚡</span>
+            <div class="perk-title">Early Access</div>
+            <div class="perk-text">Get notified about new releases before the public — first in line</div>
+            <a class="perk-action" onclick="showDashTab('newsletter',document.querySelectorAll('.dash-tab')[4])">Subscribe →</a>
+          </div>
+          <div class="perk-card">
+            <span class="perk-icon">🎓</span>
+            <div class="perk-title">Bonus Content</div>
+            <div class="perk-text">Exclusive bonus chapters and checklists included with your purchases</div>
+            <a class="perk-action" href="#">Coming Soon</a>
+          </div>
+          <div class="perk-card">
+            <span class="perk-icon">🌟</span>
+            <div class="perk-title">Referral Rewards</div>
+            <div class="perk-text">Refer friends and earn bonus coupon codes as a thank you</div>
+            <a class="perk-action" onclick="showDashTab('overview',document.querySelectorAll('.dash-tab')[0])">Get Link →</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PROFILE TAB -->
+    <div class="dash-panel" id="tab-profile">
+      <div class="sec-card">
+        <div class="sec-title">👤 My Profile</div>
+        <div class="profile-grid">
+          <div>
+            <label class="profile-lbl">First Name</label>
+            <input class="profile-inp" type="text" id="pfFirstName" placeholder="First name">
+          </div>
+          <div>
+            <label class="profile-lbl">Last Name</label>
+            <input class="profile-inp" type="text" id="pfLastName" placeholder="Last name">
+          </div>
+          <div>
+            <label class="profile-lbl">Email Address</label>
+            <input class="profile-inp" type="email" id="pfEmail" placeholder="Email address">
+          </div>
+          <div>
+            <label class="profile-lbl">Income Goal</label>
+            <select class="profile-inp" id="pfGoal">
+              <option>Extra $500–$1,000/month side income</option>
+              <option>Replace my job income ($3,000–$6,000/month)</option>
+              <option>Build a 6-figure AI business ($10,000+/month)</option>
+              <option>Passive income through AI automation</option>
+              <option>Just exploring AI opportunities</option>
+            </select>
+          </div>
+        </div>
+        <button class="save-profile-btn" onclick="saveProfile()">💾 SAVE CHANGES</button>
+      </div>
+
+    <!-- NEWSLETTER TAB -->
+    <div class="dash-panel" id="tab-newsletter">
+      <div class="sec-card">
+        <div class="sec-title">📰 AI Money Newsletter</div>
+        <div class="newsletter-card">
+          <div class="nl-title">📬 WEEKLY AI MONETIZATION TIPS</div>
+          <div class="nl-text">Get exclusive AI money-making strategies, tool reviews, case studies, and member-only deals delivered to your inbox every week — completely free for members.</div>
+          <div class="nl-toggle">
+            <label class="toggle-switch">
+              <input type="checkbox" id="nlToggle" checked onchange="saveNewsletterPref()">
+              <div class="toggle-slider"></div>
+            </label>
+            <span class="nl-label" id="nlLabel">Newsletter Subscribed ✅</span>
+          </div>
+          <p style="font-size:.75rem;color:rgba(255,255,255,.35);">Unsubscribe anytime — no hard feelings!</p>
+        </div>
+      </div>
+
+      <div class="sec-card">
+        <div class="sec-title">📩 What You'll Receive</div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;">
+          <div style="background:rgba(0,0,0,.35);border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:14px;">
+            <div style="font-size:1.5rem;margin-bottom:6px;">💡</div>
+            <div style="font-size:.85rem;font-weight:700;color:#fff;margin-bottom:4px;">Weekly AI Tips</div>
+            <div style="font-size:.75rem;color:rgba(255,255,255,.45);">Actionable strategies for making money with the latest AI tools</div>
+          </div>
+          <div style="background:rgba(0,0,0,.35);border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:14px;">
+            <div style="font-size:1.5rem;margin-bottom:6px;">🔥</div>
+            <div style="font-size:.85rem;font-weight:700;color:#fff;margin-bottom:4px;">Hot Opportunities</div>
+            <div style="font-size:.75rem;color:rgba(255,255,255,.45);">First to know about new AI platforms and monetization openings</div>
+          </div>
+          <div style="background:rgba(0,0,0,.35);border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:14px;">
+            <div style="font-size:1.5rem;margin-bottom:6px;">🏷️</div>
+            <div style="font-size:.85rem;font-weight:700;color:#fff;margin-bottom:4px;">Exclusive Coupons</div>
+            <div style="font-size:.75rem;color:rgba(255,255,255,.45);">Monthly coupon codes and flash sales for members only</div>
+          </div>
+          <div style="background:rgba(0,0,0,.35);border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:14px;">
+            <div style="font-size:1.5rem;margin-bottom:6px;">📣</div>
+            <div style="font-size:.85rem;font-weight:700;color:#fff;margin-bottom:4px;">New eBook Alerts</div>
+            <div style="font-size:.75rem;color:rgba(255,255,255,.45);">Early notification before new titles go live to the public</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /dashboard -->
+</div><!-- /wrap -->
+
+<div class="toast" id="toast"></div>
+
+<script>
+const BOOKS=[
+  {id:1,emoji:"🤖",title:"The AI Profit Blueprint",fullTitle:"The AI Profit Blueprint: 7 Proven Methods to Make Money with AI",price:37.00,memberPrice:24.99},
+  {id:2,emoji:"💬",title:"ChatGPT Cash Machine",fullTitle:"ChatGPT Cash Machine: Build a 6-Figure Business Using AI",price:29.99,memberPrice:19.99},
+  {id:3,emoji:"💰",title:"Passive Income AI Empire",fullTitle:"Passive Income AI Empire: Automate Your Way to Financial Freedom",price:44.99,memberPrice:29.99},
+  {id:4,emoji:"⚡",title:"Prompt Engineering for Profit",fullTitle:"Prompt Engineering for Profit: Turn AI Communication Into a 6-Figure Skill",price:34.99,memberPrice:22.99},
+  {id:5,emoji:"🚀",title:"AI Freelancer's Fortune",fullTitle:"AI Freelancer's Fortune: Land High-Paying Clients with AI-Powered Services",price:27.99,memberPrice:17.99},
+  {id:6,emoji:"👑",title:"Digital Gold: AI Content Empire",fullTitle:"Digital Gold: Monetizing AI-Generated Content at Scale",price:39.99,memberPrice:26.99}
+];
+
+let currentMember=null;
+
+function showToast(msg,type='green'){
+  const t=document.getElementById('toast');
+  t.textContent=msg;
+  t.style.background=type==='red'?'rgba(255,50,50,.2)':'rgba(57,255,20,.2)';
+  t.style.borderColor=type==='red'?'#ff5555':'#39ff14';
+  t.style.color=type==='red'?'#ff5555':'#39ff14';
+  t.classList.add('show');
+  clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),3000);
+}
+
+function switchTab(tab,el){
+  document.querySelectorAll('.auth-tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.auth-form').forEach(f=>f.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById(tab==='signup'?'signupForm':'loginForm').classList.add('active');
+}
+
+function doSignup(){
+  const fn=document.getElementById('sgFirstName').value.trim();
+  const ln=document.getElementById('sgLastName').value.trim();
+  const email=document.getElementById('sgEmail').value.trim();
+  const goal=document.getElementById('sgGoal').value;
+  const agree=document.getElementById('sgAgree').checked;
+  const interests=[...document.querySelectorAll('.interest-option input:checked')].map(i=>i.value);
+  const source=document.getElementById('sgSource').value;
+  const err=document.getElementById('sgErr');
+
+  if(!fn||!email||!email.includes('@')){err.textContent='Please enter your first name and valid email.';return;}
+  if(!agree){err.textContent='Please agree to receive emails to continue.';return;}
+  err.textContent='';
+
+  const member={
+    firstName:fn,lastName:ln,name:fn+' '+ln,email,goal,interests,source,
+    newsletter:true,joined:new Date().toISOString(),
+    referralCode:'AIREF-'+Math.random().toString(36).substr(2,8).toUpperCase()
+  };
+  localStorage.setItem('aistore_member',JSON.stringify(member));
+  currentMember=member;
+  showDashboard();
+  showToast('🎉 Welcome to the AI Money Elite! Discounts unlocked!');
+}
+
+function doLogin(){
+  const email=document.getElementById('lgEmail').value.trim();
+  const name=document.getElementById('lgName').value.trim().toLowerCase();
+  const err=document.getElementById('lgErr');
+  const saved=localStorage.getItem('aistore_member');
+  if(!saved){err.textContent='No account found. Please sign up first.';return;}
+  const m=JSON.parse(saved);
+  if(m.email.toLowerCase()===email.toLowerCase() && (m.firstName||m.name).toLowerCase().split(' ')[0]===name){
+    err.textContent='';
+    currentMember=m;
+    showDashboard();
+    showToast('👋 Welcome back, '+m.firstName+'!');
+  } else {
+    err.textContent='Email or name does not match. Try signing up if you haven\'t yet.';
+  }
+}
+
+function doLogout(){
+  currentMember=null;
+  document.getElementById('authSection').classList.add('active');
+  document.getElementById('dashboardSection').style.display='none';
+  showToast('Logged out successfully.');
+}
+
+function showDashboard(){
+  document.getElementById('authSection').classList.remove('active');
+  const dash=document.getElementById('dashboardSection');
+  dash.style.display='block';
+  const m=currentMember;
+  const fn=m.firstName||m.name.split(' ')[0]||'Member';
+
+  // Avatar initial
+  document.getElementById('memberAvatar').textContent=fn[0].toUpperCase();
+  document.getElementById('dashName').textContent=m.name||fn;
+  document.getElementById('dashEmail').textContent=m.email||'';
+  document.getElementById('joinedBadge').textContent='Member Since '+new Date(m.joined).toLocaleDateString('en-US',{month:'short',year:'numeric'});
+
+  // Profile tab prefill
+  document.getElementById('pfFirstName').value=m.firstName||'';
+  document.getElementById('pfLastName').value=m.lastName||'';
+  document.getElementById('pfEmail').value=m.email||'';
+  if(m.goal) document.getElementById('pfGoal').value=m.goal;
+
+  // Referral
+  document.getElementById('refLink').textContent=`${window.location.origin}/store.html?ref=${m.referralCode||'AIREF-MEMBER'}`;
+
+  // Newsletter
+  document.getElementById('nlToggle').checked=m.newsletter!==false;
+  document.getElementById('nlLabel').textContent=m.newsletter!==false?'Newsletter Subscribed ✅':'Newsletter Unsubscribed';
+
+  loadOrderHistory();
+  buildStats();
+  buildRecommended();
+}
+
+function loadOrderHistory(){
+  const orders=JSON.parse(localStorage.getItem('aistore_member_history')||'[]');
+  const allOrders=JSON.parse(localStorage.getItem('aistore_orders')||'[]');
+  const email=currentMember?.email||'';
+  // Merge: find all orders for this email
+  const myOrders=allOrders.filter(o=>o.customerEmail===email);
+
+  const el=document.getElementById('orderHistoryList');
+  document.getElementById('orderCountBadge').textContent=myOrders.length+' Order'+(myOrders.length!==1?'s':'');
+
+  if(!myOrders.length&&!orders.length){
+    el.innerHTML='<div class="empty-hist"><div style="font-size:3rem;margin-bottom:12px;">📭</div><p>No orders yet. Start shopping!</p><a href="store.html" style="display:inline-block;margin-top:14px;padding:10px 24px;background:linear-gradient(135deg,var(--pink),var(--purple));color:#fff;text-decoration:none;border-radius:8px;font-weight:800;font-size:.85rem;">🛍️ BROWSE eBOOKS</a></div>';
+    return;
+  }
+
+  // Group orders by order ID
+  const grouped={};
+  myOrders.forEach(o=>{
+    if(!grouped[o.id]) grouped[o.id]={id:o.id,date:o.date,items:[],status:o.status};
+    grouped[o.id].items.push(o);
+  });
+
+  el.innerHTML=Object.values(grouped).reverse().map(g=>{
+    const total=g.items.reduce((s,i)=>s+parseFloat(i.price||0),0);
+    return`<div class="order-hist-item">
+      <div class="oh-header">
+        <div>
+          <div class="oh-id">📦 ${g.id}</div>
+          <div class="oh-date">${new Date(g.date).toLocaleString()}</div>
+        </div>
+        <div class="oh-total">$${total.toFixed(2)}</div>
+      </div>
+      <div class="oh-items">${g.items.map(i=>`
+        <div class="oh-book">
+          <span class="oh-book-icon">${BOOKS.find(b=>b.id===i.bookId)?.emoji||'📚'}</span>
+          <span class="oh-book-title">${i.book}</span>
+          <span class="oh-book-fmt">${i.format||'PDF'}</span>
+          <span class="oh-status ${i.status==='Fulfilled'?'s-fulfilled':'s-pending'}">${i.status||'Pending'}</span>
+        </div>`).join('')}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function buildStats(){
+  const allOrders=JSON.parse(localStorage.getItem('aistore_orders')||'[]');
+  const email=currentMember?.email||'';
+  const myOrders=allOrders.filter(o=>o.customerEmail===email);
+  const spent=myOrders.reduce((s,o)=>s+parseFloat(o.price||0),0);
+  const books=new Set(myOrders.map(o=>o.bookId)).size;
+  // Calculate savings (difference between regular and member price)
+  let saved=0;
+  myOrders.forEach(o=>{
+    const book=BOOKS.find(b=>b.id===o.bookId);
+    if(book&&o.member) saved+=(book.price-book.memberPrice);
+  });
+  document.getElementById('statOrders').textContent=myOrders.length;
+  document.getElementById('statSpent').textContent='$'+spent.toFixed(2);
+  document.getElementById('statSaved').textContent='$'+saved.toFixed(2);
+  document.getElementById('statBooks').textContent=books;
+}
+
+function buildRecommended(){
+  const allOrders=JSON.parse(localStorage.getItem('aistore_orders')||'[]');
+  const email=currentMember?.email||'';
+  const ownedIds=allOrders.filter(o=>o.customerEmail===email).map(o=>o.bookId);
+  const notOwned=BOOKS.filter(b=>!ownedIds.includes(b.id));
+  const recs=notOwned.slice(0,4);
+  const el=document.getElementById('recommendedBooks');
+  if(!recs.length){el.innerHTML='<p style="color:rgba(255,255,255,.4);font-size:.85rem;">You own all our eBooks! Stay tuned for new titles. 🎉</p>';return;}
+  el.innerHTML=recs.map(b=>`
+    <div style="background:rgba(0,0,0,.4);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:14px;transition:all .3s;" onmouseover="this.style.borderColor='rgba(255,0,255,.35)'" onmouseout="this.style.borderColor='rgba(255,255,255,.1)'">
+      <div style="font-size:2rem;margin-bottom:6px;">${b.emoji}</div>
+      <div style="font-size:.82rem;font-weight:700;color:#fff;margin-bottom:4px;">${b.title}</div>
+      <div style="font-size:.75rem;color:var(--green);margin-bottom:10px;">💎 $${b.memberPrice.toFixed(2)} <span style="text-decoration:line-through;color:rgba(255,255,255,.3);">$${b.price.toFixed(2)}</span></div>
+      <a href="product.html?id=${b.id}" style="display:block;text-align:center;padding:7px;background:linear-gradient(135deg,rgba(255,0,255,.2),rgba(191,0,255,.2));border:1px solid rgba(255,0,255,.35);color:var(--pink);border-radius:7px;text-decoration:none;font-size:.75rem;font-weight:800;letter-spacing:1px;">VIEW & BUY →</a>
+    </div>`).join('');
+}
+
+function showDashTab(tab,el){
+  document.querySelectorAll('.dash-tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.dash-panel').forEach(p=>p.classList.remove('active'));
+  if(el) el.classList.add('active');
+  document.getElementById('tab-'+tab).classList.add('active');
+}
+
+function saveProfile(){
+  if(!currentMember)return;
+  currentMember.firstName=document.getElementById('pfFirstName').value.trim()||currentMember.firstName;
+  currentMember.lastName=document.getElementById('pfLastName').value.trim()||currentMember.lastName;
+  currentMember.name=(currentMember.firstName+' '+currentMember.lastName).trim();
+  currentMember.email=document.getElementById('pfEmail').value.trim()||currentMember.email;
+  currentMember.goal=document.getElementById('pfGoal').value;
+  localStorage.setItem('aistore_member',JSON.stringify(currentMember));
+  document.getElementById('dashName').textContent=currentMember.name;
+  document.getElementById('dashEmail').textContent=currentMember.email;
+  showToast('✅ Profile saved!');
+}
+
+function saveNewsletterPref(){
+  if(!currentMember)return;
+  const checked=document.getElementById('nlToggle').checked;
+  currentMember.newsletter=checked;
+  localStorage.setItem('aistore_member',JSON.stringify(currentMember));
+  document.getElementById('nlLabel').textContent=checked?'Newsletter Subscribed ✅':'Newsletter Unsubscribed';
+  showToast(checked?'📬 Newsletter subscribed!':'Newsletter unsubscribed.');
+}
+
+function copyCoupon(code){
+  navigator.clipboard.writeText(code).then(()=>showToast(`✅ Coupon "${code}" copied! Use it at checkout.`));
+}
+
+function copyRef(){
+  const link=document.getElementById('refLink').textContent;
+  navigator.clipboard.writeText(link).then(()=>showToast('🔗 Referral link copied!'));
+}
+
+function clearHistory(){
+  if(confirm('Clear your local order history?')){
+    localStorage.removeItem('aistore_member_history');
+    loadOrderHistory();buildStats();
+    showToast('🗑 Order history cleared.');
+  }
+}
+
+// AUTO-LOGIN if member exists
+window.onload=function(){
+  const saved=localStorage.getItem('aistore_member');
+  const params=new URLSearchParams(window.location.search);
+  // Check for ?signup=1 or ?login=1
+  if(params.get('signup')==='1'){
+    switchTab('signup',document.querySelectorAll('.auth-tab')[0]);
+  }
+  if(saved){
+    currentMember=JSON.parse(saved);
+    showDashboard();
+  }
+};
+</script>
+</body>
+</html>
+
+
+      <div class="sec-card">
+        <div class="sec-title" style="color:#ff4444;">⚠️ Account Actions</div>
+        <p style="color:rgba(255,255,255,.5);font-size:.85rem;margin-bottom:14px;">These actions affect your account data stored in this browser.</p>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;">
+          <button onclick="clearHistory()" style="padding:9px 18px;background:rgba(255,165,0,.12);border:1px solid rgba(255,165,0,.35);color:#ffa500;border-radius:8px;cursor:pointer;font-size:.8rem;font-weight:700;">🗑 Clear Order History</button>
+          <button onclick="doLogout()" style="padding:9px 18px;background:rgba(255,50,50,.12);border:1px solid rgba(255,50,50,.35);color:#ff5555;border-radius:8px;cursor:pointer;font-size:.8rem;font-weight:700;">🚪 Logout</button>
+        </div>
+      </div>
+    </div>
